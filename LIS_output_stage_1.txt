@@ -1,0 +1,126 @@
+(uni-sign) D:\Uni-Sign-LIS>script\LIS_test_stage1.bat
+Not using distributed mode
+
+args :
+ Namespace(batch_size=1, gradient_accumulation_steps=1, gradient_clipping=1.0, epochs=1, world_size=1, dist_url='env://', local_rank=0, hidden_dim=256, finetune='', opt='AdamW', opt_eps=1e-09, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.0001, sched='cosine', lr=0.0003, min_lr=1e-08, warmup_epochs=0, output_dir='out\\stage1_pretraining', seed=42, eval=False, num_workers=8, pin_mem=True, offload=False, dtype='bf16', zero_stage=2, compute_fp32_loss=False, quick_break=1, rgb_support=False, max_length=256, dataset='LIS', task='SLT', label_smoothing=0.2, distributed=False)
+Creating dataset:
+
+#####################################################
+Intializing Dataset :
+
+Fase : train
+Recupero le annotazioni da file json: dataset\LIS\data\LIS_Labels.json
+Dataset: LIS
+pose_dir: ./dataset/LIS/pose_format
+rgb_dir: ./dataset/LIS/rgb_format
+Totale annotazioni caricate: 2
+Trasformazioni per immagini RGB definite con successo.
+Train : indice di partenza campioni (0) - indice di fine campioni (1)
+
+#####################################################
+#total 1
+
+#####################################################
+Intializing Dataset :
+
+Fase : dev
+Recupero le annotazioni da file json: dataset\LIS\data\LIS_Labels.json
+Dataset: LIS
+pose_dir: ./dataset/LIS/pose_format
+rgb_dir: ./dataset/LIS/rgb_format
+Totale annotazioni caricate: 2
+Trasformazioni per immagini RGB definite con successo.
+Test : indice di partenza campioni (1) - indice di fine campioni (2)
+
+#####################################################
+#total 1
+Creating model:
+number of params: 587.747368M
+AdamW (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    differentiable: False
+    eps: 1e-09
+    foreach: None
+    fused: None
+    initial_lr: 0.0003
+    lr: 0.0003
+    maximize: False
+    weight_decay: 0.0
+
+Parameter Group 1
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    differentiable: False
+    eps: 1e-09
+    foreach: None
+    fused: None
+    initial_lr: 0.0003
+    lr: 0.0003
+    maximize: False
+    weight_decay: 0.0001
+)
+Start training for 1 epochs
+
+------------------ Load Pose :
+
+Keypoints caricati da: ./dataset/LIS/pose_format\12_10_2023_0.pkl
+Path RGB corrispondente : ./dataset/LIS/rgb_format\12_10_2023_0.mp4
+[NORMALIZATION] Keypoints normalizzati con frame size 720x710
+Numero totale frame disponibili: 289
+Campionamento casuale di 256 frame su 289
+Frame selezionati: 256 - Keypoints shape (singolo frame): (1, 133, 2)
+[CROP] scale=0.7311 | x=(0.08, 0.81) | y=(0.23, 0.87)
+[CROP] crop_scale: scale=0.7311 | range x=(-1.00, 1.00) | range y=(-0.86, 0.86)
+[PART_KP] Part: body      | Shape: torch.Size([256, 9, 3]) | Min xy: (-1.00, -0.86) | Max xy: (1.00, 0.86) | Zeroed: 0
+[PART_KP] Part: left      | Shape: torch.Size([256, 21, 3]) | Min xy: (-0.22, -0.20) | Max xy: (0.00, 0.19) | Zeroed: 0
+[PART_KP] Part: right     | Shape: torch.Size([256, 21, 3]) | Min xy: (-0.08, -0.33) | Max xy: (0.32, 0.27) | Zeroed: 0
+[PART_KP] Part: face_all  | Shape: torch.Size([256, 18, 3]) | Min xy: (-0.17, -0.12) | Max xy: (0.15, 0.20) | Zeroed: 0
+Keypoint processati per 'body', 'left', 'right', 'face_all': ['body', 'left', 'right', 'face_all']
+
+------------------
+
+
+Collate chiamato su batch di dimensione: 1
+save ckpt begin
+save ckpt finish
+Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
+Epoch: [0/1]  [0/1]  eta: 0:00:42  lr: 0.000300  loss: 16.5292 (16.5292)  time: 42.5210  data: 7.0503
+Epoch: [0/1] Total time: 0:00:45 (45.2328 s / it)
+Averaged stats: lr: 0.000300  loss: 16.5292 (16.5292)
+save ckpt begin
+save ckpt finish
+
+------------------ Load Pose :
+
+Keypoints caricati da: ./dataset/LIS/pose_format\12_10_2023_1.pkl
+Path RGB corrispondente : ./dataset/LIS/rgb_format\12_10_2023_1.mp4
+[NORMALIZATION] Keypoints normalizzati con frame size 720x710
+Numero totale frame disponibili: 276
+Campionamento casuale di 256 frame su 276
+Frame selezionati: 256 - Keypoints shape (singolo frame): (1, 133, 2)
+[CROP] scale=0.7510 | x=(0.09, 0.84) | y=(0.21, 0.88)
+[CROP] crop_scale: scale=0.7510 | range x=(-1.00, 1.00) | range y=(-0.89, 0.89)
+[PART_KP] Part: body      | Shape: torch.Size([256, 9, 3]) | Min xy: (-1.00, -0.89) | Max xy: (1.00, 0.89) | Zeroed: 0
+[PART_KP] Part: left      | Shape: torch.Size([256, 21, 3]) | Min xy: (-0.23, -0.20) | Max xy: (0.00, 0.08) | Zeroed: 0
+[PART_KP] Part: right     | Shape: torch.Size([256, 21, 3]) | Min xy: (-0.15, -0.34) | Max xy: (0.24, 0.06) | Zeroed: 0
+[PART_KP] Part: face_all  | Shape: torch.Size([256, 18, 3]) | Min xy: (-0.17, -0.09) | Max xy: (0.15, 0.20) | Zeroed: 0
+Keypoint processati per 'body', 'left', 'right', 'face_all': ['body', 'left', 'right', 'face_all']
+
+------------------
+
+
+Collate chiamato su batch di dimensione: 1
+Test:  [0/1]  eta: 0:00:29  loss: 19.8575 (19.8575)  time: 29.9060  data: 12.9480
+Test: Total time: 0:00:30 (30.7878 s / it)
+{'bleu1': 0.6944444444444444, 'bleu2': 0.4944923575807722, 'bleu3': 0.3521359623917049, 'bleu4': 0.25077862501012643}
+Rough: 0.00
+* BLEU-4 0.251 loss 19.857
+BLEU-4 of the network on the 1 dev videos: 0.25
+save ckpt begin
+save ckpt finish
+Max BLEU-4: 0.25%
+Training time 0:01:24

@@ -1,0 +1,198 @@
+(uni-sign) D:\Uni-Sign-LIS>script\LIS_stage3.bat
+Not using distributed mode
+Namespace(batch_size=1, gradient_accumulation_steps=1, gradient_clipping=1.0, epochs=1, world_size=1, dist_url='env://', local_rank=0, hidden_dim=256, finetune='out/stage2_pretraining/best_checkpoint.pth', opt='AdamW', opt_eps=1e-09, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.0001, sched='cosine', lr=0.0003, min_lr=1e-08, warmup_epochs=0, output_dir='out/stage3_finetuning', seed=42, eval=False, num_workers=8, pin_mem=True, offload=False, dtype='bf16', zero_stage=2, compute_fp32_loss=False, quick_break=0, rgb_support=True, max_length=256, dataset='LIS', task='SLT', label_smoothing=0.2, distributed=False)
+Creating dataset:
+
+#####################################################
+Intializing Dataset :
+
+Fase : train
+Recupero le annotazioni da file json: dataset\LIS\data\LIS_Labels.json
+Dataset: LIS
+pose_dir: ./dataset/LIS/pose_format
+rgb_dir: ./dataset/LIS/rgb_format
+Totale annotazioni caricate: 2
+Trasformazioni per immagini RGB definite con successo.
+Train : indice di partenza campioni (0) - indice di fine campioni (1)
+
+#####################################################
+#total 1
+
+#####################################################
+Intializing Dataset :
+
+Fase : dev
+Recupero le annotazioni da file json: dataset\LIS\data\LIS_Labels.json
+Dataset: LIS
+pose_dir: ./dataset/LIS/pose_format
+rgb_dir: ./dataset/LIS/rgb_format
+Totale annotazioni caricate: 2
+Trasformazioni per immagini RGB definite con successo.
+Test : indice di partenza campioni (1) - indice di fine campioni (2)
+
+#####################################################
+#total 1
+
+#####################################################
+Intializing Dataset :
+
+Fase : test
+Recupero le annotazioni da file json: dataset\LIS\data\LIS_Labels.json
+Dataset: LIS
+pose_dir: ./dataset/LIS/pose_format
+rgb_dir: ./dataset/LIS/rgb_format
+Totale annotazioni caricate: 2
+Trasformazioni per immagini RGB definite con successo.
+Test : indice di partenza campioni (1) - indice di fine campioni (2)
+
+#####################################################
+#total 1
+Creating model:
+***********************************
+Load Checkpoint...
+***********************************
+Missing keys:
+
+Unexpected keys:
+
+number of params: 592.63831M
+AdamW (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    differentiable: False
+    eps: 1e-09
+    foreach: None
+    fused: None
+    initial_lr: 0.0003
+    lr: 0.0003
+    maximize: False
+    weight_decay: 0.0
+
+Parameter Group 1
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    differentiable: False
+    eps: 1e-09
+    foreach: None
+    fused: None
+    initial_lr: 0.0003
+    lr: 0.0003
+    maximize: False
+    weight_decay: 0.0001
+)
+Start training for 1 epochs
+
+------------------ Load Pose :
+
+Keypoints caricati da: ./dataset/LIS/pose_format\12_10_2023_0.pkl
+Path RGB corrispondente : ./dataset/LIS/rgb_format\12_10_2023_0.mp4
+[NORMALIZATION] Keypoints normalizzati con frame size 720x850
+Numero totale frame disponibili: 126
+Vengono usati tutti i 126 frame disponibili (nessun sottocampionamento)
+Frame selezionati: 126 - Keypoints shape (singolo frame): (1, 133, 2)
+[CROP] scale=0.7491 | x=(0.18, 0.93) | y=(0.21, 0.68)
+[CROP] crop_scale: scale=0.7491 | range x=(-1.00, 1.00) | range y=(-0.63, 0.63)
+[PART_KP] Part: body      | Shape: torch.Size([126, 9, 3]) | Min xy: (-1.00, -0.63) | Max xy: (1.00, 0.63) | Zeroed: 0
+[PART_KP] Part: left      | Shape: torch.Size([126, 21, 3]) | Min xy: (-0.27, -0.17) | Max xy: (0.07, 0.09) | Zeroed: 0
+[PART_KP] Part: right     | Shape: torch.Size([126, 21, 3]) | Min xy: (-0.03, -0.25) | Max xy: (0.29, 0.09) | Zeroed: 0
+[PART_KP] Part: face_all  | Shape: torch.Size([126, 18, 3]) | Min xy: (-0.10, -0.08) | Max xy: (0.17, 0.12) | Zeroed: 0
+Keypoint processati per 'body', 'left', 'right', 'face_all': ['body', 'left', 'right', 'face_all']
+Estrazione support RGB abilitata.
+[RGB_DICT] Frame totali dopo il campionamento: 126
+[RGB_DICT] Frame mano sinistra validi (conf > 0.3): 126
+[RGB_DICT] Left hand sample size: 13
+[RGB_DICT] Probabilities sum (should be 1.0): 1.0000
+[RGB_DICT] Primi 5 indici campionati mano sinstra: [ 8 18 29 32 34]
+[RGB_DICT] Forma dello skeleton estratto dalla mano sinistra: (13, 21, 2)
+[BBOX] bbox_4hands: box_hw=180 | left_box shape: (4, 13), right_box shape: (4, 13)
+Chiavi RGB support estratte: ['left_sampled_indices', 'left_hands', 'left_skeletons_norm', 'right_sampled_indices', 'right_hands', 'right_skeletons_norm']
+
+------------------
+
+
+Collate chiamato su batch di dimensione: 1
+RGB Support attivo: estrazione crop mani in corso
+Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
+Epoch: [0/1]  [0/1]  eta: 0:00:45  lr: 0.000300  loss: 19.0119 (19.0119)  time: 45.8809  data: 13.3699
+Epoch: [0/1] Total time: 0:00:48 (48.7671 s / it)
+Averaged stats: lr: 0.000300  loss: 19.0119 (19.0119)
+save ckpt begin
+save ckpt finish
+
+------------------ Load Pose :
+
+Keypoints caricati da: ./dataset/LIS/pose_format\12_10_2023_47.pkl
+Path RGB corrispondente : ./dataset/LIS/rgb_format\12_10_2023_47.mp4
+[NORMALIZATION] Keypoints normalizzati con frame size 720x850
+Numero totale frame disponibili: 266
+Campionamento casuale di 256 frame su 266
+Frame selezionati: 256 - Keypoints shape (singolo frame): (1, 133, 2)
+[CROP] scale=0.6765 | x=(0.14, 0.82) | y=(0.22, 0.79)
+[CROP] crop_scale: scale=0.6765 | range x=(-1.00, 1.00) | range y=(-0.84, 0.84)
+[PART_KP] Part: body      | Shape: torch.Size([256, 9, 3]) | Min xy: (-1.00, -0.84) | Max xy: (1.00, 0.84) | Zeroed: 0
+[PART_KP] Part: left      | Shape: torch.Size([256, 21, 3]) | Min xy: (-0.24, -0.19) | Max xy: (0.01, 0.08) | Zeroed: 0
+[PART_KP] Part: right     | Shape: torch.Size([256, 21, 3]) | Min xy: (-0.16, -0.28) | Max xy: (0.31, 0.10) | Zeroed: 4
+[PART_KP] Part: face_all  | Shape: torch.Size([256, 18, 3]) | Min xy: (-0.15, -0.08) | Max xy: (0.18, 0.20) | Zeroed: 0
+Keypoint processati per 'body', 'left', 'right', 'face_all': ['body', 'left', 'right', 'face_all']
+Estrazione support RGB abilitata.
+[RGB_DICT] Frame totali dopo il campionamento: 256
+[RGB_DICT] Frame mano sinistra validi (conf > 0.3): 256
+[RGB_DICT] Left hand sample size: 26
+[RGB_DICT] Probabilities sum (should be 1.0): 1.0000
+[RGB_DICT] Primi 5 indici campionati mano sinstra: [ 6 12 14 25 35]
+[RGB_DICT] Forma dello skeleton estratto dalla mano sinistra: (26, 21, 2)
+[BBOX] bbox_4hands: box_hw=180 | left_box shape: (4, 26), right_box shape: (4, 26)
+Chiavi RGB support estratte: ['left_sampled_indices', 'left_hands', 'left_skeletons_norm', 'right_sampled_indices', 'right_hands', 'right_skeletons_norm']
+
+------------------
+
+
+Collate chiamato su batch di dimensione: 1
+RGB Support attivo: estrazione crop mani in corso
+Test:  [0/1]  eta: 0:00:45  loss: 13.4634 (13.4634)  time: 45.5517  data: 18.9787
+Test: Total time: 0:00:46 (46.7882 s / it)
+{'bleu1': 15.463917525773196, 'bleu2': 6.924603372241807, 'bleu3': 3.3402162559227886, 'bleu4': 1.483229169026741}
+Rough: 39.29
+
+------------------ Load Pose :
+
+Keypoints caricati da: ./dataset/LIS/pose_format\12_10_2023_47.pkl
+Path RGB corrispondente : ./dataset/LIS/rgb_format\12_10_2023_47.mp4
+[NORMALIZATION] Keypoints normalizzati con frame size 720x850
+Numero totale frame disponibili: 266
+Campionamento casuale di 256 frame su 266
+Frame selezionati: 256 - Keypoints shape (singolo frame): (1, 133, 2)
+[CROP] scale=0.6765 | x=(0.14, 0.82) | y=(0.22, 0.79)
+[CROP] crop_scale: scale=0.6765 | range x=(-1.00, 1.00) | range y=(-0.84, 0.84)
+[PART_KP] Part: body      | Shape: torch.Size([256, 9, 3]) | Min xy: (-1.00, -0.84) | Max xy: (1.00, 0.84) | Zeroed: 0
+[PART_KP] Part: left      | Shape: torch.Size([256, 21, 3]) | Min xy: (-0.24, -0.19) | Max xy: (0.01, 0.08) | Zeroed: 0
+[PART_KP] Part: right     | Shape: torch.Size([256, 21, 3]) | Min xy: (-0.16, -0.28) | Max xy: (0.31, 0.10) | Zeroed: 4
+[PART_KP] Part: face_all  | Shape: torch.Size([256, 18, 3]) | Min xy: (-0.15, -0.08) | Max xy: (0.18, 0.20) | Zeroed: 0
+Keypoint processati per 'body', 'left', 'right', 'face_all': ['body', 'left', 'right', 'face_all']
+Estrazione support RGB abilitata.
+[RGB_DICT] Frame totali dopo il campionamento: 256
+[RGB_DICT] Frame mano sinistra validi (conf > 0.3): 256
+[RGB_DICT] Left hand sample size: 26
+[RGB_DICT] Probabilities sum (should be 1.0): 1.0000
+[RGB_DICT] Primi 5 indici campionati mano sinstra: [ 0 12 22 26 34]
+[RGB_DICT] Forma dello skeleton estratto dalla mano sinistra: (26, 21, 2)
+[BBOX] bbox_4hands: box_hw=194 | left_box shape: (4, 26), right_box shape: (4, 26)
+Chiavi RGB support estratte: ['left_sampled_indices', 'left_hands', 'left_skeletons_norm', 'right_sampled_indices', 'right_hands', 'right_skeletons_norm']
+
+------------------
+
+
+Collate chiamato su batch di dimensione: 1
+RGB Support attivo: estrazione crop mani in corso
+Test:  [0/1]  eta: 0:00:39  loss: 13.4634 (13.4634)  time: 39.3896  data: 13.4129
+Test: Total time: 0:00:40 (40.6794 s / it)
+{'bleu1': 15.463917525773196, 'bleu2': 6.924603372241807, 'bleu3': 3.3402162559227886, 'bleu4': 1.483229169026741}
+Rough: 39.29
+save ckpt begin
+save ckpt finish
+BLEU-4 of the network on the 1 dev videos: 1.48
+Max BLEU-4: 1.48%
+Training time 0:02:35

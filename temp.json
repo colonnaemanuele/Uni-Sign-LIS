@@ -1,0 +1,41 @@
+RESULT : 
+
+{    "meta_info" :{},
+
+     "instance_info": [
+		{
+			"frame_id": 1,
+			"instances": [
+				{
+					"keypoints": [ [], []], 
+                    "keypoint_scores" : []
+                }
+            ]
+        },
+        {
+			"frame_id": 2,
+			"instances": [
+				{
+					"keypoints": [ [], []], 
+                    "keypoint_scores" : []
+                }
+            ]
+        }
+     ]
+            
+    
+}
+
+
+OUTPUT :
+
+{
+    "keypoints": [
+        [  [ [], [], [] ]  ], 
+        [  [ [], [], [] ]  ], 
+    ],
+    "scores": [
+        [ [[]] , [[]] ],
+    ],
+    "w_h": [ 204, 170]
+}
