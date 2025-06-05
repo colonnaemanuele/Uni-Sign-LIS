@@ -252,6 +252,13 @@ def evaluate(args, data_loader, model, model_without_ddp):
  
         for step, (src_input, tgt_input) in enumerate(metric_logger.log_every(data_loader, 10, header)):
             """if target_dtype != None:"""
+
+
+            print(f"[DEBUG] STEP {step} - Input al modello:")
+            for key, value in src_input.items():
+                if isinstance(value, torch.Tensor):
+                    print(f"{key}: shape {value.shape}, dtype {value.dtype}")
+
             for key in src_input.keys():
                 if isinstance(src_input[key], torch.Tensor):
                     src_input[key] = src_input[key].to(device)
@@ -265,6 +272,10 @@ def evaluate(args, data_loader, model, model_without_ddp):
                                                 max_new_tokens=100, 
                                                 num_beams = 4,
                         )
+            
+            print(f"\n[DEBUG] Output grezzo (token IDs):")
+            for i, out in enumerate(output):
+                print(f"Output[{i}]: {out.tolist()}")
 
             for i in range(len(output)):
                 tgt_pres.append(output[i])
@@ -272,18 +283,50 @@ def evaluate(args, data_loader, model, model_without_ddp):
 
     tokenizer = model_without_ddp.mt5_tokenizer
     padding_value = tokenizer.eos_token_id
+
+    # DEBUG 3 - Token speciali
+    print("\n[DEBUG] Token speciali del tokenizer:")
+    print(f"[DEBUG] pad_token: {tokenizer.pad_token} ({tokenizer.pad_token_id})")
+    print(f"[DEBUG] eos_token: {tokenizer.eos_token} ({tokenizer.eos_token_id})")
+
+    # DEBUG 4 - Controllo contenuto sequenze
+    print("\n[DEBUG] Verifica lunghezza sequenze e token speciali:")
+    for i, seq in enumerate(tgt_pres):
+        token_list = seq.tolist()
+        print(f"Seq {i}: len={len(token_list)}, tokens={token_list}")
+        if all(t in [tokenizer.pad_token_id, tokenizer.eos_token_id] for t in token_list):
+            print(f"Seq {i} contiene solo token speciali.")
     
     pad_tensor = torch.ones(150 - len(tgt_pres[0])).to(device) * padding_value
-
 
     tgt_pres[0] = torch.cat((tgt_pres[0],pad_tensor.long()),dim = 0)
 
     tgt_pres = pad_sequence(tgt_pres,batch_first=True,padding_value=padding_value)
+
+    # DEBUG 5 - Decodifica output
+    print("\n[DEBUG] Decodifica delle predizioni:")
+    for i, seq in enumerate(tgt_pres):
+        decoded = tokenizer.decode(seq, skip_special_tokens=True)
+        print(f"{i}: '{decoded}'")
+
     tgt_pres = tokenizer.batch_decode(tgt_pres, skip_special_tokens=True)
+
+
+    # DEBUG 6 - Controllo riferimenti
+    print("\n[DEBUG] Riferimenti (target):")
+    for i, ref in enumerate(tgt_refs):
+        print(f"{i}: '{ref}'")
+
             
-    if args.dataset == 'CSL_News':
+    if args.dataset == 'CSL_News' or args.dataset == 'LIS':
         tgt_pres = [' '.join(list(r.replace(" ",'').replace("\n",''))) for r in tgt_pres]
         tgt_refs = [' '.join(list(r.replace("，", ',').replace("？","?").replace(" ",''))) for r in tgt_refs]
+
+    # DEBUG 7 Fallback se tutte le predizioni sono vuote 
+    if all(hyp.strip() == "" for hyp in tgt_pres):
+        print("[WARNING] Tutte le ipotesi sono vuote, salto il calcolo delle metriche.")
+        return {"bleu4": 0.0, "rouge": 0.0, "loss": 0.0}
+    
 
     bleu_dict, rouge_score = translation_performance(tgt_refs, tgt_pres)
     for k,v in bleu_dict.items():

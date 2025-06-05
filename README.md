@@ -18,8 +18,8 @@ Uni-Sign: Toward Unified Sign Language Understanding at Scale</a></h3>
 ![Uni-Sign](docs/framework.png)
 
 
-## Installazione
-E' suggerito creare un nuovo ambiente conda.
+## 🛠️ Installation
+We suggest to create a new conda environment. 
 ```bash
 # create environment
 conda create --name Uni-Sign python=3.9
@@ -28,28 +28,10 @@ conda activate Uni-Sign
 pip install -r requirements.txt
 ```
 
-## Preparazione Dataset
+## Keypoints
 
-A partire dai video mp4 originali e dalle annotazioni in formato txt : 
-1. Ritagliare i video per escludere i bordi neri
-2. Estrarre i keypoints usando il modello RTMPose-x da MMPose per estrarre i keypoints
-3. Convertire la struttura del file json contenente i keypoints in modo da essere compatibile con il modello Uni-Sign, e convertire il risultante file json in pkl
-4. Allineare i video con le annotazioni, creando un file json `LIS_Labels` con la seguente struttura :
-   ```json
-   [
-     {
-        "video": "{giorno}_{video}.mp4",
-        "pose": "{giorno}_{video}.pkl",
-        "text": "annotazione video"
-    },
-   ]
-   ```
-   e posizionarlo in `/Uni-Sign/dataset/data`
-5. posizionare i video rgb in formato mp4 ritagliati nella directory `/Uni-Sign/dataset/rgb_format`, salvandoli con nome `{giorno}_{video}.mp4`, mentre i file pkl contenenti i keypoints nella directory `/Uni-Sign/dataset/pose_format`, salvandoli con nome `{giorno}_{video}.pkl`
+I keypoints dei video devono già essere stati estratti, usando il modello RTTMPose-x, e salvati in formato `pkl`.
 
-Per far ciò è possibile usare il notebook `./pose_extraction.ipynb` (i file andranno rinominati e posizionati manualmente!)
- 
-La struttura finale ella directory del dataset deve essere la seguente : 
 ```
 /Uni-Sign/dataset/
 ├── LIS
@@ -68,33 +50,32 @@ La struttura finale ella directory del dataset deve essere la seguente :
 │   
 ```
 
+
+
 ## Pre-trained Weights
-Scaricare i pesi del modello [mt5-base](https://huggingface.co/google/mt5-base) e posizionarli in `./pretrained_weight/mt5-base`
+Scaricare i pesi del modello (mt5-base)[https://huggingface.co/google/mt5-base] e posizionarli in `./pretrained_weight/mt5-base`
 
-## Addestramento e Valutazione
-
+## 🔨 Training & Evaluation
 Tutti gli script devono essere eseguiti nella directory Uni-Sign .
-
-### Addestramento
+### Training
 **Stage 1**: pose-only pre-training.
 ```bat
-./script/LIS_stage1.bat
+./script/LIS_train_stage1.bat
 ```
 **Stage 2**: RGB-pose pre-training.
 ```bat
-./script/LIS_stage2.bat
+./script/LIS_train_stage2.bat
 ```
 **Stage 3**: downstream fine-tuning.
 ```bat
-./script/LIS_stage3.bat
+./script/LIS_train_stage3.bat
 ```
 
-### Valutazione
-Dopo aver completato lo stage 3 di fine-tuning, per valutare le performance : 
+### Evaluation
+Dopo aver completato lo stage 3 fine-tuning, per valutare le performance : 
 ```bat
 ./script/LIS_eval_stage3.bat
 ```
-
 
 ## 👍 Acknowledgement
 The codebase of Uni-Sign is adapted from [GFSLT-VLP](https://github.com/zhoubenjia/GFSLT-VLP), while the implementations of the pose/temporal encoders are derived from [CoSign](https://openaccess.thecvf.com/content/ICCV2023/papers/Jiao_CoSign_Exploring_Co-occurrence_Signals_in_Skeleton-based_Continuous_Sign_Language_Recognition_ICCV_2023_paper.pdf). We sincerely appreciate the authors of CoSign for personally sharing their code 🙏. \

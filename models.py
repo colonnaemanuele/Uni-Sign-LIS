@@ -341,6 +341,11 @@ class Uni_Sign(nn.Module):
                                 max_new_tokens=max_new_tokens,
                                 num_beams = num_beams,
                             )
+        
+        print("[DEBUG] inputs_embeds shape:", inputs_embeds.shape)
+        print("[DEBUG] attention_mask shape:", attention_mask.shape)
+        print("[DEBUG] mean value in inputs_embeds:", inputs_embeds.mean().item())
+
 
         return out
 

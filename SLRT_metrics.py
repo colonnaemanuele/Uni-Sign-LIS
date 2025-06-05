@@ -268,6 +268,15 @@ def sableu(references, hypotheses, tokenizer):
     return scores
 
 def translation_performance(txt_ref, txt_hyp):
+
+    # Fallback: se una o più ipotesi sono vuote, stampa warning e sostituiscile con un token placeholder
+    safe_txt_hyp = [hyp.strip() if hyp.strip() else "[EMPTY]" for hyp in txt_hyp]
+    safe_txt_ref = [ref.strip() if ref.strip() else "[EMPTY]" for ref in txt_ref]
+
+    for i, (hyp, ref) in enumerate(zip(safe_txt_hyp, safe_txt_ref)):
+        if hyp == "[EMPTY]":
+            print(f"[Vuoto] Hyp #{i}: '{hyp}' | Ref: '{ref}'")
+    
     from rouge import Rouge as SLT_Rouge
     rouge=SLT_Rouge()
     scores = rouge.get_scores(txt_hyp, txt_ref, avg=True)

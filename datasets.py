@@ -216,8 +216,15 @@ def load_support_rgb_dict(tmp, skeletons, confs, full_path, data_transform):
 
     support_rgb_dict = {}
     
+    """
     confs = np.array(confs) # (T, 1, 133)  , T = numero di frame dopo il sampling iniziale
     skeletons = np.array(skeletons) # (T, 1, 133, 2) 
+
+    """
+    confs = np.stack(confs)       # evita array a oggetti
+    skeletons = np.stack(skeletons)
+    
+
 
     print(f"[RGB_DICT] Frame totali dopo il campionamento: {confs.shape[0]}")
 
