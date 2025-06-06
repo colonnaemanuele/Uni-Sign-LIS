@@ -106,10 +106,7 @@ class Uni_Sign(nn.Module):
         
         if "LIS" in self.args.dataset:
             self.lang = 'Italian'
-        if "CSL" in self.args.dataset:
-            self.lang = 'Chinese'
-        else:
-            self.lang = 'English'
+        
         
         if self.args.rgb_support:
             #self.rgb_support_backbone = torch.nn.Sequential(*list(torchvision.models.efficientnet_b0(pretrained=True).children())[:-2])
@@ -172,7 +169,7 @@ class Uni_Sign(nn.Module):
         """
 
         if enable_autocast and torch.cuda.is_available():
-            return torch.cuda.amp.autocast(device_type="cuda", dtype=dtype)
+            return torch.cuda.amp.autocast(dtype=dtype)
         else:
             return contextlib.nullcontext()
 
@@ -340,6 +337,7 @@ class Uni_Sign(nn.Module):
                                 attention_mask = attention_mask,
                                 max_new_tokens=max_new_tokens,
                                 num_beams = num_beams,
+                                #decoder_start_token_id=self.mt5_tokenizer.pad_token_id
                             )
         
         print("[DEBUG] inputs_embeds shape:", inputs_embeds.shape)
