@@ -102,11 +102,12 @@ def load_part_kp(skeletons, confs, force_ok=False):
         kps_with_scores[part] = tensor_result
 
         # DEBUG sintetico per ciascuna parte
+        """
         print(f"[PART_KP] Part: {part:9s} | Shape: {tensor_result.shape} "
               f"| Min xy: ({tensor_result[...,0].min():.2f}, {tensor_result[...,1].min():.2f}) "
               f"| Max xy: ({tensor_result[...,0].max():.2f}, {tensor_result[...,1].max():.2f}) "
               f"| Zeroed: {(tensor_result[...,2] <= thr).sum().item()}")
-        
+        """
     return kps_with_scores
 
 
@@ -135,7 +136,7 @@ def crop_scale(motion, thr):
     xs = (xmin+xmax-scale) / 2
     ys = (ymin+ymax-scale) / 2
 
-    print(f"[CROP] scale={scale:.4f} | x=({xmin:.2f}, {xmax:.2f}) | y=({ymin:.2f}, {ymax:.2f})")
+    #print(f"[CROP] scale={scale:.4f} | x=({xmin:.2f}, {xmax:.2f}) | y=({ymin:.2f}, {ymax:.2f})")
     # norm
     result[...,:2] = (motion[..., :2] - [xs,ys]) / scale
     result[...,:2] = (result[..., :2] - 0.5) * 2
@@ -143,7 +144,7 @@ def crop_scale(motion, thr):
     # mask useless kp
     result[result[...,2]<=thr] = 0
 
-    print(f"[CROP] crop_scale: scale={scale:.4f} | range x=({result[...,0].min():.2f}, {result[...,0].max():.2f}) | range y=({result[...,1].min():.2f}, {result[...,1].max():.2f})")
+    #print(f"[CROP] crop_scale: scale={scale:.4f} | range x=({result[...,0].min():.2f}, {result[...,0].max():.2f}) | range y=({result[...,1].min():.2f}, {result[...,1].max():.2f})")
 
     return result, scale, [xs,ys]
 
@@ -201,7 +202,7 @@ def bbox_4hands(left_keypoints, right_keypoints, hw):
     left_new_box = np.stack([left_mean_x - box_hw/2, left_mean_y - box_hw/2, left_mean_x + box_hw/2, left_mean_y + box_hw/2]).astype(np.int16)
     right_new_box = np.stack([right_mean_x - box_hw/2, right_mean_y - box_hw/2, right_mean_x + box_hw/2, right_mean_y + box_hw/2]).astype(np.int16)
     
-    print(f"[BBOX] bbox_4hands: box_hw={box_hw} | left_box shape: {left_new_box.shape}, right_box shape: {right_new_box.shape}")
+    #print(f"[BBOX] bbox_4hands: box_hw={box_hw} | left_box shape: {left_new_box.shape}, right_box shape: {right_new_box.shape}")
 
 
     return left_new_box.transpose(1,0), right_new_box.transpose(1,0), box_hw
@@ -226,7 +227,7 @@ def load_support_rgb_dict(tmp, skeletons, confs, full_path, data_transform):
     
 
 
-    print(f"[RGB_DICT] Frame totali dopo il campionamento: {confs.shape[0]}")
+    #print(f"[RGB_DICT] Frame totali dopo il campionamento: {confs.shape[0]}")
 
     # Filtro per mano sinistra
 
@@ -234,7 +235,7 @@ def load_support_rgb_dict(tmp, skeletons, confs, full_path, data_transform):
     left_confs_filter = confs[:,0,91:112].mean(-1) #  21 keypoint della mano sinistra e  calcola la confidence media per ciascun frame
     left_confs_filter_indices = np.where(left_confs_filter > 0.3)[0] # restituisce gli indici dei frame con mano sinistra visibile
 
-    print(f"[RGB_DICT] Frame mano sinistra validi (conf > 0.3): {len(left_confs_filter_indices)}")
+    #print(f"[RGB_DICT] Frame mano sinistra validi (conf > 0.3): {len(left_confs_filter_indices)}")
 
     # Se nessun frame ha mano sinistra sufficientemente visibile, saltiamo
     if len(left_confs_filter_indices) == 0:
@@ -253,8 +254,8 @@ def load_support_rgb_dict(tmp, skeletons, confs, full_path, data_transform):
         
         left_sample_size = int(np.ceil(0.1 * len(left_confs_filter_indices)))
         
-        print(f"[RGB_DICT] Left hand sample size: {left_sample_size}")
-        print(f"[RGB_DICT] Probabilities sum (should be 1.0): {np.sum(left_probabilities):.4f}")
+        #print(f"[RGB_DICT] Left hand sample size: {left_sample_size}")
+        #print(f"[RGB_DICT] Probabilities sum (should be 1.0): {np.sum(left_probabilities):.4f}")
 
         left_sampled_indices = np.random.choice(left_confs_filter_indices.tolist(), 
                                                 size=left_sample_size, 
@@ -269,11 +270,11 @@ def load_support_rgb_dict(tmp, skeletons, confs, full_path, data_transform):
 
         left_sampled_indices = np.sort(left_sampled_indices)
 
-        print(f"[RGB_DICT] Primi 5 indici campionati mano sinstra: {left_sampled_indices[:5]}")
+        #print(f"[RGB_DICT] Primi 5 indici campionati mano sinstra: {left_sampled_indices[:5]}")
         
         left_skeletons = skeletons[left_sampled_indices,0,91:112]
 
-        print(f"[RGB_DICT] Forma dello skeleton estratto dalla mano sinistra: {left_skeletons.shape}")
+        #print(f"[RGB_DICT] Forma dello skeleton estratto dalla mano sinistra: {left_skeletons.shape}")
 
     right_confs_filter = confs[:,0,112:].mean(-1)
     right_confs_filter_indices = np.where(right_confs_filter > 0.3)[0]
@@ -475,7 +476,7 @@ class Base_Dataset(Dataset.Dataset):
                 src_input['src_length_batch'] = src_length_batch
                 
         if self.rgb_support:
-            print("RGB Support attivo: estrazione crop mani in corso")
+            #print("RGB Support attivo: estrazione crop mani in corso")
             support_rgb_dicts = {key:[] for key in batch[0][-1].keys()}
             for _, _, _, _, support_rgb_dict in batch:
                 for key in support_rgb_dict.keys():
@@ -547,13 +548,14 @@ class LIS_Dataset(Base_Dataset):
         # divisione in train/test deterministica
 
         if phase == 'train':
-            self.start_idx = int(sum_sample * 0.0)
-            self.end_idx = int(sum_sample * 0.99)
+            self.start_idx = 0
+            self.end_idx = int(sum_sample * 0.8)
             print(f"Train : indice di partenza campioni ({self.start_idx}) - indice di fine campioni ({self.end_idx})")
-        else:
-            self.start_idx = int(sum_sample * 0.99)
-            self.end_idx = int(sum_sample)
+        else:  # 'test'
+            self.start_idx = int(sum_sample * 0.8)
+            self.end_idx = sum_sample
             print(f"Test : indice di partenza campioni ({self.start_idx}) - indice di fine campioni ({self.end_idx})")
+
 
         print("\n#####################################################")
         
@@ -613,7 +615,7 @@ class LIS_Dataset(Base_Dataset):
     
 
     def load_pose(self, pose_name, rgb_name):
-        print("\n------------------ Load Pose : \n")
+        #print("\n------------------ Load Pose : \n")
         pose_path = os.path.join(self.pose_dir, pose_name)
         pose = pickle.load(open(pose_path, 'rb'))
 
@@ -629,7 +631,7 @@ class LIS_Dataset(Base_Dataset):
 
 
         full_path = os.path.join(self.rgb_dir, rgb_name)
-        print(f"Path RGB corrispondente : {full_path}")
+        #print(f"Path RGB corrispondente : {full_path}")
 
         #########################################################################################################à
         # Legge dimensioni reali del video RGB
@@ -644,19 +646,19 @@ class LIS_Dataset(Base_Dataset):
         max_val = max(np.max(kp) for kp in pose['keypoints'])
         if max_val > 10:
             pose['keypoints'] = [np.array(kp) / [frame_w, frame_h] for kp in pose['keypoints']]
-            print(f"[NORMALIZATION] Keypoints normalizzati con frame size {frame_w}x{frame_h}")
+            #print(f"[NORMALIZATION] Keypoints normalizzati con frame size {frame_w}x{frame_h}")
         #########################################################################################################
         
         duration = len(pose['scores'])
-        print(f"Numero totale frame disponibili: {duration}") # scores che ha shape [T, 1, 133]
+        #print(f"Numero totale frame disponibili: {duration}") # scores che ha shape [T, 1, 133]
 
         # se ci sono più frame del necessario seleziona self.max_length frame casuali
         if duration > self.max_length:
             tmp = sorted(random.sample(range(duration), k=self.max_length))
-            print(f"Campionamento casuale di {self.max_length} frame su {duration}")
+            #print(f"Campionamento casuale di {self.max_length} frame su {duration}")
         else:
             tmp = list(range(duration))
-            print(f"Vengono usati tutti i {duration} frame disponibili (nessun sottocampionamento)")
+            #print(f"Vengono usati tutti i {duration} frame disponibili (nessun sottocampionamento)")
         
         tmp = np.array(tmp)
             
@@ -676,19 +678,19 @@ class LIS_Dataset(Base_Dataset):
         skeletons = skeletons_tmp
         confs = confs_tmp
 
-        print(f"Frame selezionati: {len(skeletons)} - Keypoints shape (singolo frame): {skeletons[0].shape}")
+        #print(f"Frame selezionati: {len(skeletons)} - Keypoints shape (singolo frame): {skeletons[0].shape}")
                 
         # normalizza e organizza i keypoint
         kps_with_scores = load_part_kp(skeletons, confs)
-        print(f"Keypoint processati per 'body', 'left', 'right', 'face_all': {list(kps_with_scores.keys())}")
+        #print(f"Keypoint processati per 'body', 'left', 'right', 'face_all': {list(kps_with_scores.keys())}")
         
         support_rgb_dict = {}
         if self.rgb_support:
-            print(f"Estrazione support RGB abilitata.")
+            #print(f"Estrazione support RGB abilitata.")
             support_rgb_dict = load_support_rgb_dict(tmp, skeletons, confs, full_path, self.data_transform)
-            print(f"Chiavi RGB support estratte: {list(support_rgb_dict.keys())}")
+            #print(f"Chiavi RGB support estratte: {list(support_rgb_dict.keys())}")
 
-        print("\n------------------\n")
+        #print("\n------------------\n")
         return kps_with_scores, support_rgb_dict
 
     def __str__(self):
