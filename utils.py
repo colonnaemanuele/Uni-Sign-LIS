@@ -528,7 +528,7 @@ def get_args_parser():
     parser.add_argument("--max_length", default=256, type=int)
     
     # select dataset
-    parser.add_argument("--dataset", default="LIS", choices=["LIS","LIS2_TEST"])
+    parser.add_argument("--dataset", default="LIS", choices=["LIS","LIS_TEST"])
     
     # select task
     parser.add_argument("--task", default="SLT", choices=['SLT', "ISLR", "CSLR"])

@@ -1,0 +1,491 @@
+(uni-sign) D:\Uni-Sign-LIS>script\LIS_test_stage2.bat
+Not using distributed mode
+
+args :
+ Namespace(batch_size=1, gradient_accumulation_steps=8, gradient_clipping=1.0, epochs=1, world_size=1, dist_url='env://', local_rank=0, hidden_dim=256, finetune='out\\stage1_pretraining\\best_checkpoint.pth', opt='AdamW', opt_eps=1e-09, opt_betas=None, clip_grad=None, momentum=0.9, weight_decay=0.0001, sched='cosine', lr=0.0003, min_lr=1e-08, warmup_epochs=0, output_dir='out\\stage2_pretraining', seed=42, eval=False, num_workers=8, pin_mem=True, offload=False, dtype='bf16', zero_stage=2, compute_fp32_loss=False, quick_break=1, rgb_support=True, max_length=256, dataset='LIS', task='SLT', label_smoothing=0.2, distributed=False)
+Creating dataset:
+
+#####################################################
+Intializing Dataset :
+
+Fase : train
+Recupero le annotazioni da file json: dataset\LIS\data\LIS_Labels.json
+Dataset: LIS
+pose_dir: ./dataset/LIS/pose_format
+rgb_dir: ./dataset/LIS/rgb_format
+Totale annotazioni caricate: 2
+Trasformazioni per immagini RGB definite con successo.
+Train : indice di partenza campioni (0) - indice di fine campioni (1)
+
+#####################################################
+#total 1
+
+#####################################################
+Intializing Dataset :
+
+Fase : dev
+Recupero le annotazioni da file json: dataset\LIS\data\LIS_Labels.json
+Dataset: LIS
+pose_dir: ./dataset/LIS/pose_format
+rgb_dir: ./dataset/LIS/rgb_format
+Totale annotazioni caricate: 2
+Trasformazioni per immagini RGB definite con successo.
+Test : indice di partenza campioni (1) - indice di fine campioni (2)
+
+#####################################################
+#total 1
+Creating model:
+***********************************
+Load Checkpoint...
+***********************************
+Recuper Checkpoint da: out\stage1_pretraining\best_checkpoint.pth
+Missing keys:
+ rgb_support_backbone.0.0.0.weight
+rgb_support_backbone.0.0.1.weight
+rgb_support_backbone.0.0.1.bias
+rgb_support_backbone.0.0.1.running_mean
+rgb_support_backbone.0.0.1.running_var
+rgb_support_backbone.0.1.0.block.0.0.weight
+rgb_support_backbone.0.1.0.block.0.1.weight
+rgb_support_backbone.0.1.0.block.0.1.bias
+rgb_support_backbone.0.1.0.block.0.1.running_mean
+rgb_support_backbone.0.1.0.block.0.1.running_var
+rgb_support_backbone.0.1.0.block.1.fc1.weight
+rgb_support_backbone.0.1.0.block.1.fc1.bias
+rgb_support_backbone.0.1.0.block.1.fc2.weight
+rgb_support_backbone.0.1.0.block.1.fc2.bias
+rgb_support_backbone.0.1.0.block.2.0.weight
+rgb_support_backbone.0.1.0.block.2.1.weight
+rgb_support_backbone.0.1.0.block.2.1.bias
+rgb_support_backbone.0.1.0.block.2.1.running_mean
+rgb_support_backbone.0.1.0.block.2.1.running_var
+rgb_support_backbone.0.2.0.block.0.0.weight
+rgb_support_backbone.0.2.0.block.0.1.weight
+rgb_support_backbone.0.2.0.block.0.1.bias
+rgb_support_backbone.0.2.0.block.0.1.running_mean
+rgb_support_backbone.0.2.0.block.0.1.running_var
+rgb_support_backbone.0.2.0.block.1.0.weight
+rgb_support_backbone.0.2.0.block.1.1.weight
+rgb_support_backbone.0.2.0.block.1.1.bias
+rgb_support_backbone.0.2.0.block.1.1.running_mean
+rgb_support_backbone.0.2.0.block.1.1.running_var
+rgb_support_backbone.0.2.0.block.2.fc1.weight
+rgb_support_backbone.0.2.0.block.2.fc1.bias
+rgb_support_backbone.0.2.0.block.2.fc2.weight
+rgb_support_backbone.0.2.0.block.2.fc2.bias
+rgb_support_backbone.0.2.0.block.3.0.weight
+rgb_support_backbone.0.2.0.block.3.1.weight
+rgb_support_backbone.0.2.0.block.3.1.bias
+rgb_support_backbone.0.2.0.block.3.1.running_mean
+rgb_support_backbone.0.2.0.block.3.1.running_var
+rgb_support_backbone.0.2.1.block.0.0.weight
+rgb_support_backbone.0.2.1.block.0.1.weight
+rgb_support_backbone.0.2.1.block.0.1.bias
+rgb_support_backbone.0.2.1.block.0.1.running_mean
+rgb_support_backbone.0.2.1.block.0.1.running_var
+rgb_support_backbone.0.2.1.block.1.0.weight
+rgb_support_backbone.0.2.1.block.1.1.weight
+rgb_support_backbone.0.2.1.block.1.1.bias
+rgb_support_backbone.0.2.1.block.1.1.running_mean
+rgb_support_backbone.0.2.1.block.1.1.running_var
+rgb_support_backbone.0.2.1.block.2.fc1.weight
+rgb_support_backbone.0.2.1.block.2.fc1.bias
+rgb_support_backbone.0.2.1.block.2.fc2.weight
+rgb_support_backbone.0.2.1.block.2.fc2.bias
+rgb_support_backbone.0.2.1.block.3.0.weight
+rgb_support_backbone.0.2.1.block.3.1.weight
+rgb_support_backbone.0.2.1.block.3.1.bias
+rgb_support_backbone.0.2.1.block.3.1.running_mean
+rgb_support_backbone.0.2.1.block.3.1.running_var
+rgb_support_backbone.0.3.0.block.0.0.weight
+rgb_support_backbone.0.3.0.block.0.1.weight
+rgb_support_backbone.0.3.0.block.0.1.bias
+rgb_support_backbone.0.3.0.block.0.1.running_mean
+rgb_support_backbone.0.3.0.block.0.1.running_var
+rgb_support_backbone.0.3.0.block.1.0.weight
+rgb_support_backbone.0.3.0.block.1.1.weight
+rgb_support_backbone.0.3.0.block.1.1.bias
+rgb_support_backbone.0.3.0.block.1.1.running_mean
+rgb_support_backbone.0.3.0.block.1.1.running_var
+rgb_support_backbone.0.3.0.block.2.fc1.weight
+rgb_support_backbone.0.3.0.block.2.fc1.bias
+rgb_support_backbone.0.3.0.block.2.fc2.weight
+rgb_support_backbone.0.3.0.block.2.fc2.bias
+rgb_support_backbone.0.3.0.block.3.0.weight
+rgb_support_backbone.0.3.0.block.3.1.weight
+rgb_support_backbone.0.3.0.block.3.1.bias
+rgb_support_backbone.0.3.0.block.3.1.running_mean
+rgb_support_backbone.0.3.0.block.3.1.running_var
+rgb_support_backbone.0.3.1.block.0.0.weight
+rgb_support_backbone.0.3.1.block.0.1.weight
+rgb_support_backbone.0.3.1.block.0.1.bias
+rgb_support_backbone.0.3.1.block.0.1.running_mean
+rgb_support_backbone.0.3.1.block.0.1.running_var
+rgb_support_backbone.0.3.1.block.1.0.weight
+rgb_support_backbone.0.3.1.block.1.1.weight
+rgb_support_backbone.0.3.1.block.1.1.bias
+rgb_support_backbone.0.3.1.block.1.1.running_mean
+rgb_support_backbone.0.3.1.block.1.1.running_var
+rgb_support_backbone.0.3.1.block.2.fc1.weight
+rgb_support_backbone.0.3.1.block.2.fc1.bias
+rgb_support_backbone.0.3.1.block.2.fc2.weight
+rgb_support_backbone.0.3.1.block.2.fc2.bias
+rgb_support_backbone.0.3.1.block.3.0.weight
+rgb_support_backbone.0.3.1.block.3.1.weight
+rgb_support_backbone.0.3.1.block.3.1.bias
+rgb_support_backbone.0.3.1.block.3.1.running_mean
+rgb_support_backbone.0.3.1.block.3.1.running_var
+rgb_support_backbone.0.4.0.block.0.0.weight
+rgb_support_backbone.0.4.0.block.0.1.weight
+rgb_support_backbone.0.4.0.block.0.1.bias
+rgb_support_backbone.0.4.0.block.0.1.running_mean
+rgb_support_backbone.0.4.0.block.0.1.running_var
+rgb_support_backbone.0.4.0.block.1.0.weight
+rgb_support_backbone.0.4.0.block.1.1.weight
+rgb_support_backbone.0.4.0.block.1.1.bias
+rgb_support_backbone.0.4.0.block.1.1.running_mean
+rgb_support_backbone.0.4.0.block.1.1.running_var
+rgb_support_backbone.0.4.0.block.2.fc1.weight
+rgb_support_backbone.0.4.0.block.2.fc1.bias
+rgb_support_backbone.0.4.0.block.2.fc2.weight
+rgb_support_backbone.0.4.0.block.2.fc2.bias
+rgb_support_backbone.0.4.0.block.3.0.weight
+rgb_support_backbone.0.4.0.block.3.1.weight
+rgb_support_backbone.0.4.0.block.3.1.bias
+rgb_support_backbone.0.4.0.block.3.1.running_mean
+rgb_support_backbone.0.4.0.block.3.1.running_var
+rgb_support_backbone.0.4.1.block.0.0.weight
+rgb_support_backbone.0.4.1.block.0.1.weight
+rgb_support_backbone.0.4.1.block.0.1.bias
+rgb_support_backbone.0.4.1.block.0.1.running_mean
+rgb_support_backbone.0.4.1.block.0.1.running_var
+rgb_support_backbone.0.4.1.block.1.0.weight
+rgb_support_backbone.0.4.1.block.1.1.weight
+rgb_support_backbone.0.4.1.block.1.1.bias
+rgb_support_backbone.0.4.1.block.1.1.running_mean
+rgb_support_backbone.0.4.1.block.1.1.running_var
+rgb_support_backbone.0.4.1.block.2.fc1.weight
+rgb_support_backbone.0.4.1.block.2.fc1.bias
+rgb_support_backbone.0.4.1.block.2.fc2.weight
+rgb_support_backbone.0.4.1.block.2.fc2.bias
+rgb_support_backbone.0.4.1.block.3.0.weight
+rgb_support_backbone.0.4.1.block.3.1.weight
+rgb_support_backbone.0.4.1.block.3.1.bias
+rgb_support_backbone.0.4.1.block.3.1.running_mean
+rgb_support_backbone.0.4.1.block.3.1.running_var
+rgb_support_backbone.0.4.2.block.0.0.weight
+rgb_support_backbone.0.4.2.block.0.1.weight
+rgb_support_backbone.0.4.2.block.0.1.bias
+rgb_support_backbone.0.4.2.block.0.1.running_mean
+rgb_support_backbone.0.4.2.block.0.1.running_var
+rgb_support_backbone.0.4.2.block.1.0.weight
+rgb_support_backbone.0.4.2.block.1.1.weight
+rgb_support_backbone.0.4.2.block.1.1.bias
+rgb_support_backbone.0.4.2.block.1.1.running_mean
+rgb_support_backbone.0.4.2.block.1.1.running_var
+rgb_support_backbone.0.4.2.block.2.fc1.weight
+rgb_support_backbone.0.4.2.block.2.fc1.bias
+rgb_support_backbone.0.4.2.block.2.fc2.weight
+rgb_support_backbone.0.4.2.block.2.fc2.bias
+rgb_support_backbone.0.4.2.block.3.0.weight
+rgb_support_backbone.0.4.2.block.3.1.weight
+rgb_support_backbone.0.4.2.block.3.1.bias
+rgb_support_backbone.0.4.2.block.3.1.running_mean
+rgb_support_backbone.0.4.2.block.3.1.running_var
+rgb_support_backbone.0.5.0.block.0.0.weight
+rgb_support_backbone.0.5.0.block.0.1.weight
+rgb_support_backbone.0.5.0.block.0.1.bias
+rgb_support_backbone.0.5.0.block.0.1.running_mean
+rgb_support_backbone.0.5.0.block.0.1.running_var
+rgb_support_backbone.0.5.0.block.1.0.weight
+rgb_support_backbone.0.5.0.block.1.1.weight
+rgb_support_backbone.0.5.0.block.1.1.bias
+rgb_support_backbone.0.5.0.block.1.1.running_mean
+rgb_support_backbone.0.5.0.block.1.1.running_var
+rgb_support_backbone.0.5.0.block.2.fc1.weight
+rgb_support_backbone.0.5.0.block.2.fc1.bias
+rgb_support_backbone.0.5.0.block.2.fc2.weight
+rgb_support_backbone.0.5.0.block.2.fc2.bias
+rgb_support_backbone.0.5.0.block.3.0.weight
+rgb_support_backbone.0.5.0.block.3.1.weight
+rgb_support_backbone.0.5.0.block.3.1.bias
+rgb_support_backbone.0.5.0.block.3.1.running_mean
+rgb_support_backbone.0.5.0.block.3.1.running_var
+rgb_support_backbone.0.5.1.block.0.0.weight
+rgb_support_backbone.0.5.1.block.0.1.weight
+rgb_support_backbone.0.5.1.block.0.1.bias
+rgb_support_backbone.0.5.1.block.0.1.running_mean
+rgb_support_backbone.0.5.1.block.0.1.running_var
+rgb_support_backbone.0.5.1.block.1.0.weight
+rgb_support_backbone.0.5.1.block.1.1.weight
+rgb_support_backbone.0.5.1.block.1.1.bias
+rgb_support_backbone.0.5.1.block.1.1.running_mean
+rgb_support_backbone.0.5.1.block.1.1.running_var
+rgb_support_backbone.0.5.1.block.2.fc1.weight
+rgb_support_backbone.0.5.1.block.2.fc1.bias
+rgb_support_backbone.0.5.1.block.2.fc2.weight
+rgb_support_backbone.0.5.1.block.2.fc2.bias
+rgb_support_backbone.0.5.1.block.3.0.weight
+rgb_support_backbone.0.5.1.block.3.1.weight
+rgb_support_backbone.0.5.1.block.3.1.bias
+rgb_support_backbone.0.5.1.block.3.1.running_mean
+rgb_support_backbone.0.5.1.block.3.1.running_var
+rgb_support_backbone.0.5.2.block.0.0.weight
+rgb_support_backbone.0.5.2.block.0.1.weight
+rgb_support_backbone.0.5.2.block.0.1.bias
+rgb_support_backbone.0.5.2.block.0.1.running_mean
+rgb_support_backbone.0.5.2.block.0.1.running_var
+rgb_support_backbone.0.5.2.block.1.0.weight
+rgb_support_backbone.0.5.2.block.1.1.weight
+rgb_support_backbone.0.5.2.block.1.1.bias
+rgb_support_backbone.0.5.2.block.1.1.running_mean
+rgb_support_backbone.0.5.2.block.1.1.running_var
+rgb_support_backbone.0.5.2.block.2.fc1.weight
+rgb_support_backbone.0.5.2.block.2.fc1.bias
+rgb_support_backbone.0.5.2.block.2.fc2.weight
+rgb_support_backbone.0.5.2.block.2.fc2.bias
+rgb_support_backbone.0.5.2.block.3.0.weight
+rgb_support_backbone.0.5.2.block.3.1.weight
+rgb_support_backbone.0.5.2.block.3.1.bias
+rgb_support_backbone.0.5.2.block.3.1.running_mean
+rgb_support_backbone.0.5.2.block.3.1.running_var
+rgb_support_backbone.0.6.0.block.0.0.weight
+rgb_support_backbone.0.6.0.block.0.1.weight
+rgb_support_backbone.0.6.0.block.0.1.bias
+rgb_support_backbone.0.6.0.block.0.1.running_mean
+rgb_support_backbone.0.6.0.block.0.1.running_var
+rgb_support_backbone.0.6.0.block.1.0.weight
+rgb_support_backbone.0.6.0.block.1.1.weight
+rgb_support_backbone.0.6.0.block.1.1.bias
+rgb_support_backbone.0.6.0.block.1.1.running_mean
+rgb_support_backbone.0.6.0.block.1.1.running_var
+rgb_support_backbone.0.6.0.block.2.fc1.weight
+rgb_support_backbone.0.6.0.block.2.fc1.bias
+rgb_support_backbone.0.6.0.block.2.fc2.weight
+rgb_support_backbone.0.6.0.block.2.fc2.bias
+rgb_support_backbone.0.6.0.block.3.0.weight
+rgb_support_backbone.0.6.0.block.3.1.weight
+rgb_support_backbone.0.6.0.block.3.1.bias
+rgb_support_backbone.0.6.0.block.3.1.running_mean
+rgb_support_backbone.0.6.0.block.3.1.running_var
+rgb_support_backbone.0.6.1.block.0.0.weight
+rgb_support_backbone.0.6.1.block.0.1.weight
+rgb_support_backbone.0.6.1.block.0.1.bias
+rgb_support_backbone.0.6.1.block.0.1.running_mean
+rgb_support_backbone.0.6.1.block.0.1.running_var
+rgb_support_backbone.0.6.1.block.1.0.weight
+rgb_support_backbone.0.6.1.block.1.1.weight
+rgb_support_backbone.0.6.1.block.1.1.bias
+rgb_support_backbone.0.6.1.block.1.1.running_mean
+rgb_support_backbone.0.6.1.block.1.1.running_var
+rgb_support_backbone.0.6.1.block.2.fc1.weight
+rgb_support_backbone.0.6.1.block.2.fc1.bias
+rgb_support_backbone.0.6.1.block.2.fc2.weight
+rgb_support_backbone.0.6.1.block.2.fc2.bias
+rgb_support_backbone.0.6.1.block.3.0.weight
+rgb_support_backbone.0.6.1.block.3.1.weight
+rgb_support_backbone.0.6.1.block.3.1.bias
+rgb_support_backbone.0.6.1.block.3.1.running_mean
+rgb_support_backbone.0.6.1.block.3.1.running_var
+rgb_support_backbone.0.6.2.block.0.0.weight
+rgb_support_backbone.0.6.2.block.0.1.weight
+rgb_support_backbone.0.6.2.block.0.1.bias
+rgb_support_backbone.0.6.2.block.0.1.running_mean
+rgb_support_backbone.0.6.2.block.0.1.running_var
+rgb_support_backbone.0.6.2.block.1.0.weight
+rgb_support_backbone.0.6.2.block.1.1.weight
+rgb_support_backbone.0.6.2.block.1.1.bias
+rgb_support_backbone.0.6.2.block.1.1.running_mean
+rgb_support_backbone.0.6.2.block.1.1.running_var
+rgb_support_backbone.0.6.2.block.2.fc1.weight
+rgb_support_backbone.0.6.2.block.2.fc1.bias
+rgb_support_backbone.0.6.2.block.2.fc2.weight
+rgb_support_backbone.0.6.2.block.2.fc2.bias
+rgb_support_backbone.0.6.2.block.3.0.weight
+rgb_support_backbone.0.6.2.block.3.1.weight
+rgb_support_backbone.0.6.2.block.3.1.bias
+rgb_support_backbone.0.6.2.block.3.1.running_mean
+rgb_support_backbone.0.6.2.block.3.1.running_var
+rgb_support_backbone.0.6.3.block.0.0.weight
+rgb_support_backbone.0.6.3.block.0.1.weight
+rgb_support_backbone.0.6.3.block.0.1.bias
+rgb_support_backbone.0.6.3.block.0.1.running_mean
+rgb_support_backbone.0.6.3.block.0.1.running_var
+rgb_support_backbone.0.6.3.block.1.0.weight
+rgb_support_backbone.0.6.3.block.1.1.weight
+rgb_support_backbone.0.6.3.block.1.1.bias
+rgb_support_backbone.0.6.3.block.1.1.running_mean
+rgb_support_backbone.0.6.3.block.1.1.running_var
+rgb_support_backbone.0.6.3.block.2.fc1.weight
+rgb_support_backbone.0.6.3.block.2.fc1.bias
+rgb_support_backbone.0.6.3.block.2.fc2.weight
+rgb_support_backbone.0.6.3.block.2.fc2.bias
+rgb_support_backbone.0.6.3.block.3.0.weight
+rgb_support_backbone.0.6.3.block.3.1.weight
+rgb_support_backbone.0.6.3.block.3.1.bias
+rgb_support_backbone.0.6.3.block.3.1.running_mean
+rgb_support_backbone.0.6.3.block.3.1.running_var
+rgb_support_backbone.0.7.0.block.0.0.weight
+rgb_support_backbone.0.7.0.block.0.1.weight
+rgb_support_backbone.0.7.0.block.0.1.bias
+rgb_support_backbone.0.7.0.block.0.1.running_mean
+rgb_support_backbone.0.7.0.block.0.1.running_var
+rgb_support_backbone.0.7.0.block.1.0.weight
+rgb_support_backbone.0.7.0.block.1.1.weight
+rgb_support_backbone.0.7.0.block.1.1.bias
+rgb_support_backbone.0.7.0.block.1.1.running_mean
+rgb_support_backbone.0.7.0.block.1.1.running_var
+rgb_support_backbone.0.7.0.block.2.fc1.weight
+rgb_support_backbone.0.7.0.block.2.fc1.bias
+rgb_support_backbone.0.7.0.block.2.fc2.weight
+rgb_support_backbone.0.7.0.block.2.fc2.bias
+rgb_support_backbone.0.7.0.block.3.0.weight
+rgb_support_backbone.0.7.0.block.3.1.weight
+rgb_support_backbone.0.7.0.block.3.1.bias
+rgb_support_backbone.0.7.0.block.3.1.running_mean
+rgb_support_backbone.0.7.0.block.3.1.running_var
+rgb_support_backbone.0.8.0.weight
+rgb_support_backbone.0.8.1.weight
+rgb_support_backbone.0.8.1.bias
+rgb_support_backbone.0.8.1.running_mean
+rgb_support_backbone.0.8.1.running_var
+rgb_proj.weight
+rgb_proj.bias
+fusion_pose_rgb_linear.weight
+fusion_pose_rgb_linear.bias
+fusion_pose_rgb_DA.to_offsets.0.weight
+fusion_pose_rgb_DA.to_offsets.0.bias
+fusion_pose_rgb_DA.to_offsets.2.weight
+fusion_pose_rgb_DA.rel_pos_bias.mlp.0.0.weight
+fusion_pose_rgb_DA.rel_pos_bias.mlp.0.0.bias
+fusion_pose_rgb_DA.rel_pos_bias.mlp.1.0.weight
+fusion_pose_rgb_DA.rel_pos_bias.mlp.1.0.bias
+fusion_pose_rgb_DA.rel_pos_bias.mlp.2.weight
+fusion_pose_rgb_DA.rel_pos_bias.mlp.2.bias
+fusion_pose_rgb_DA.to_q.weight
+fusion_pose_rgb_DA.to_k.weight
+fusion_pose_rgb_DA.to_v.weight
+fusion_pose_rgb_DA.to_out.weight
+fusion_pose_rgb_DA.to_out.bias
+fusion_pose_rgb_DA.cross_attn.in_proj_weight
+fusion_pose_rgb_DA.cross_attn.in_proj_bias
+fusion_pose_rgb_DA.cross_attn.out_proj.weight
+fusion_pose_rgb_DA.cross_attn.out_proj.bias
+fusion_pose_rgb_DA.pe_layer.positional_encoding_gaussian_matrix
+fusion_gate.0.weight
+fusion_gate.0.bias
+fusion_gate.2.weight
+fusion_gate.2.bias
+Unexpected keys:
+
+number of params: 592.63831M
+AdamW (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    differentiable: False
+    eps: 1e-09
+    foreach: None
+    fused: None
+    initial_lr: 0.0003
+    lr: 0.0003
+    maximize: False
+    weight_decay: 0.0
+
+Parameter Group 1
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    differentiable: False
+    eps: 1e-09
+    foreach: None
+    fused: None
+    initial_lr: 0.0003
+    lr: 0.0003
+    maximize: False
+    weight_decay: 0.0001
+)
+Start training for 1 epochs
+
+------------------ Load Pose :
+
+Keypoints caricati da: ./dataset/LIS/pose_format\12_10_2023_0.pkl
+Path RGB corrispondente : ./dataset/LIS/rgb_format\12_10_2023_0.mp4
+[NORMALIZATION] Keypoints normalizzati con frame size 720x710
+Numero totale frame disponibili: 289
+Campionamento casuale di 256 frame su 289
+Frame selezionati: 256 - Keypoints shape (singolo frame): (1, 133, 2)
+[CROP] scale=0.7311 | x=(0.08, 0.81) | y=(0.23, 0.87)
+[CROP] crop_scale: scale=0.7311 | range x=(-1.00, 1.00) | range y=(-0.86, 0.86)
+[PART_KP] Part: body      | Shape: torch.Size([256, 9, 3]) | Min xy: (-1.00, -0.86) | Max xy: (1.00, 0.86) | Zeroed: 0
+[PART_KP] Part: left      | Shape: torch.Size([256, 21, 3]) | Min xy: (-0.22, -0.20) | Max xy: (0.00, 0.19) | Zeroed: 0
+[PART_KP] Part: right     | Shape: torch.Size([256, 21, 3]) | Min xy: (-0.08, -0.33) | Max xy: (0.32, 0.27) | Zeroed: 0
+[PART_KP] Part: face_all  | Shape: torch.Size([256, 18, 3]) | Min xy: (-0.17, -0.12) | Max xy: (0.15, 0.20) | Zeroed: 0
+Keypoint processati per 'body', 'left', 'right', 'face_all': ['body', 'left', 'right', 'face_all']
+Estrazione support RGB abilitata.
+[RGB_DICT] Frame totali dopo il campionamento: 256
+[RGB_DICT] Frame mano sinistra validi (conf > 0.3): 256
+[RGB_DICT] Left hand sample size: 26
+[RGB_DICT] Probabilities sum (should be 1.0): 1.0000
+[RGB_DICT] Primi 5 indici campionati mano sinstra: [ 6  8 13 16 29]
+[RGB_DICT] Forma dello skeleton estratto dalla mano sinistra: (26, 21, 2)
+[BBOX] bbox_4hands: box_hw=190 | left_box shape: (4, 26), right_box shape: (4, 26)
+Chiavi RGB support estratte: ['left_sampled_indices', 'left_hands', 'left_skeletons_norm', 'right_sampled_indices', 'right_hands', 'right_skeletons_norm']
+
+------------------
+
+
+Collate chiamato su batch di dimensione: 1
+RGB Support attivo: estrazione crop mani in corso
+save ckpt begin
+save ckpt finish
+C:\Users\loren\anaconda3\envs\uni-sign\lib\site-packages\torch\amp\autocast_mode.py:250: UserWarning: User provided device_type of 'cuda', but CUDA is not available. Disabling
+  warnings.warn(
+Asking to truncate to max_length but no maximum length is provided and the model has no predefined maximum length. Default to no truncation.
+Epoch: [0/1]  [0/1]  eta: 0:00:39  lr: 0.000300  loss: 15.4087 (15.4087)  time: 39.1050  data: 8.0273
+Epoch: [0/1] Total time: 0:00:41 (41.8344 s / it)
+Averaged stats: lr: 0.000300  loss: 15.4087 (15.4087)
+save ckpt begin
+save ckpt finish
+
+------------------ Load Pose :
+
+Keypoints caricati da: ./dataset/LIS/pose_format\12_10_2023_1.pkl
+Path RGB corrispondente : ./dataset/LIS/rgb_format\12_10_2023_1.mp4
+[NORMALIZATION] Keypoints normalizzati con frame size 720x710
+Numero totale frame disponibili: 276
+Campionamento casuale di 256 frame su 276
+Frame selezionati: 256 - Keypoints shape (singolo frame): (1, 133, 2)
+[CROP] scale=0.7508 | x=(0.09, 0.84) | y=(0.21, 0.88)
+[CROP] crop_scale: scale=0.7508 | range x=(-1.00, 1.00) | range y=(-0.89, 0.89)
+[PART_KP] Part: body      | Shape: torch.Size([256, 9, 3]) | Min xy: (-1.00, -0.89) | Max xy: (1.00, 0.89) | Zeroed: 0
+[PART_KP] Part: left      | Shape: torch.Size([256, 21, 3]) | Min xy: (-0.23, -0.20) | Max xy: (0.00, 0.08) | Zeroed: 0
+[PART_KP] Part: right     | Shape: torch.Size([256, 21, 3]) | Min xy: (-0.15, -0.34) | Max xy: (0.24, 0.08) | Zeroed: 0
+[PART_KP] Part: face_all  | Shape: torch.Size([256, 18, 3]) | Min xy: (-0.17, -0.09) | Max xy: (0.15, 0.20) | Zeroed: 0
+Keypoint processati per 'body', 'left', 'right', 'face_all': ['body', 'left', 'right', 'face_all']
+Estrazione support RGB abilitata.
+[RGB_DICT] Frame totali dopo il campionamento: 256
+[RGB_DICT] Frame mano sinistra validi (conf > 0.3): 256
+[RGB_DICT] Left hand sample size: 26
+[RGB_DICT] Probabilities sum (should be 1.0): 1.0000
+[RGB_DICT] Primi 5 indici campionati mano sinstra: [13 26 29 47 61]
+[RGB_DICT] Forma dello skeleton estratto dalla mano sinistra: (26, 21, 2)
+[BBOX] bbox_4hands: box_hw=210 | left_box shape: (4, 26), right_box shape: (4, 26)
+Chiavi RGB support estratte: ['left_sampled_indices', 'left_hands', 'left_skeletons_norm', 'right_sampled_indices', 'right_hands', 'right_skeletons_norm']
+
+------------------
+
+
+Collate chiamato su batch di dimensione: 1
+RGB Support attivo: estrazione crop mani in corso
+Test:  [0/1]  eta: 0:00:30  loss: 12.9418 (12.9418)  time: 30.7839  data: 13.3078
+Test: Total time: 0:00:31 (31.6987 s / it)
+{'bleu1': 0.970873786407767, 'bleu2': 0.6898684822115774, 'bleu3': 0.49021178481005784, 'bleu4': 0.3483495982023228}
+Rough: 0.00
+* BLEU-4 0.348 loss 12.942
+BLEU-4 of the network on the 1 dev videos: 0.35
+save ckpt begin
+save ckpt finish
+Max BLEU-4: 0.35%
+Training time 0:01:25

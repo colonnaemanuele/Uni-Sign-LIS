@@ -313,7 +313,7 @@ def evaluate(args, data_loader, model, model_without_ddp, phase):
 
     # fix mt5 tokenizer bug
     # per ottenere match perfetto a livello di carattere 
-    if args.dataset == 'LIS' and args.task == "SLT":
+    if (args.dataset == 'LIS' or args.dataset == 'LIS_TEST') and args.task == "SLT":
         tgt_pres = [' '.join(list(r.replace(" ",'').replace("\n",''))) for r in tgt_pres]
         tgt_refs = [' '.join(list(r.replace("，", ',').replace("？","?").replace(" ",''))) for r in tgt_refs]
 

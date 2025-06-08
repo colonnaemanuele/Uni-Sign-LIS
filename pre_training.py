@@ -1,3 +1,4 @@
+
 from pickletools import optimize
 import torch
 from torch.nn.utils.rnn import pad_sequence
@@ -302,31 +303,19 @@ def evaluate(args, data_loader, model, model_without_ddp):
 
     tgt_pres = pad_sequence(tgt_pres,batch_first=True,padding_value=padding_value)
 
-    # DEBUG 5 - Decodifica output
-    print("\n[DEBUG] Decodifica delle predizioni:")
-    for i, seq in enumerate(tgt_pres):
-        decoded = tokenizer.decode(seq, skip_special_tokens=True)
-        print(f"{i}: '{decoded}'")
+ 
 
     tgt_pres = tokenizer.batch_decode(tgt_pres, skip_special_tokens=True)
 
-
-    # DEBUG 6 - Controllo riferimenti
-    print("\n[DEBUG] Riferimenti (target):")
-    for i, ref in enumerate(tgt_refs):
-        print(f"{i}: '{ref}'")
-
             
-    if args.dataset == 'CSL_News' or args.dataset == 'LIS':
+    if args.dataset == 'LIS' or args.dataset == 'LIS_TEST':
         tgt_pres = [' '.join(list(r.replace(" ",'').replace("\n",''))) for r in tgt_pres]
         tgt_refs = [' '.join(list(r.replace("，", ',').replace("？","?").replace(" ",''))) for r in tgt_refs]
 
-    # DEBUG 7 Fallback se tutte le predizioni sono vuote 
     if all(hyp.strip() == "" for hyp in tgt_pres):
         print("[WARNING] Tutte le ipotesi sono vuote, salto il calcolo delle metriche.")
         return {"bleu4": 0.0, "rouge": 0.0, "loss": 0.0}
     
-
     bleu_dict, rouge_score = translation_performance(tgt_refs, tgt_pres)
     for k,v in bleu_dict.items():
         metric_logger.meters[k].update(v)
