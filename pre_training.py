@@ -270,7 +270,7 @@ def evaluate(args, data_loader, model, model_without_ddp):
         
             output = model_without_ddp.generate(stack_out, 
                                                 max_new_tokens=100, 
-                                                num_beams = 4,
+                                                num_beams = 4)
                         
 
             for i in range(len(output)):
