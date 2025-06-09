@@ -1,4 +1,3 @@
-
 from pickletools import optimize
 import torch
 from torch.nn.utils.rnn import pad_sequence
@@ -270,8 +269,12 @@ def evaluate(args, data_loader, model, model_without_ddp):
         
             output = model_without_ddp.generate(stack_out, 
                                                 max_new_tokens=100, 
-                                                num_beams = 4)
-                        
+                                                num_beams = 4,
+                        )
+            
+            print(f"\n[DEBUG] Output grezzo (token IDs):")
+            for i, out in enumerate(output):
+                print(f"Output[{i}]: {out.tolist()}")
 
             for i in range(len(output)):
                 tgt_pres.append(output[i])
@@ -280,10 +283,27 @@ def evaluate(args, data_loader, model, model_without_ddp):
     tokenizer = model_without_ddp.mt5_tokenizer
     padding_value = tokenizer.eos_token_id
 
+    # DEBUG 3 - Token speciali
+    print("\n[DEBUG] Token speciali del tokenizer:")
+    print(f"[DEBUG] pad_token: {tokenizer.pad_token} ({tokenizer.pad_token_id})")
+    print(f"[DEBUG] eos_token: {tokenizer.eos_token} ({tokenizer.eos_token_id})")
+
+    # DEBUG 4 - Controllo contenuto sequenze
+    print("\n[DEBUG] Verifica lunghezza sequenze e token speciali:")
+    for i, seq in enumerate(tgt_pres):
+        token_list = seq.tolist()
+        print(f"Seq {i}: len={len(token_list)}, tokens={token_list}")
+        if all(t in [tokenizer.pad_token_id, tokenizer.eos_token_id] for t in token_list):
+            print(f"Seq {i} contiene solo token speciali.")
+    
     pad_tensor = torch.ones(150 - len(tgt_pres[0])).to(device) * padding_value
 
     tgt_pres[0] = torch.cat((tgt_pres[0],pad_tensor.long()),dim = 0)
+
     tgt_pres = pad_sequence(tgt_pres,batch_first=True,padding_value=padding_value)
+
+ 
+
     tgt_pres = tokenizer.batch_decode(tgt_pres, skip_special_tokens=True)
 
             
@@ -326,4 +346,6 @@ if __name__ == '__main__':
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
 
     main(args)
+
+
 
