@@ -306,6 +306,12 @@ def evaluate(args, data_loader, model, model_without_ddp):
 
     tgt_pres = tokenizer.batch_decode(tgt_pres, skip_special_tokens=True)
 
+    print("\nPredizioni vs Target:\n")
+    for i, (pred, ref) in enumerate(zip(tgt_pres, tgt_refs)):
+        print(f"[ESEMPIO {i}]")
+        print(f"  Target    : {ref}")
+        print(f"  Prediction: {pred}")
+        print("-" * 60)
             
     if args.dataset == 'LIS' or args.dataset == 'LIS_TEST':
         tgt_pres = [' '.join(list(r.replace(" ",'').replace("\n",''))) for r in tgt_pres]
