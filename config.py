@@ -18,7 +18,7 @@ test_label_paths = {
 
 # video paths
 rgb_dirs = {
-            "LIS": "/content/drive/MyDrive/LIS3/rgb_format",
+            "LIS": "/content/drive/MyDrive/LIS3/rgb_format_resized",
             "LIS_TEST": "/content/drive/MyDrive/LIS2_TEST/rgb_format"
             }
 
