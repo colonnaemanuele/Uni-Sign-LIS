@@ -152,6 +152,8 @@ def main(args):
             for checkpoint_path in checkpoint_paths:
                 utils.save_on_master({
                     'model': get_requires_grad_dict(model_without_ddp),
+                    'optimizer': optimizer.state_dict(),
+                    'epoch': epoch + 1,
                 }, checkpoint_path)
 
         # single gpu inference
@@ -167,6 +169,8 @@ def main(args):
                         for checkpoint_path in checkpoint_paths:
                             utils.save_on_master({
                                 'model': get_requires_grad_dict(model_without_ddp),
+                                'optimizer': optimizer.state_dict(),
+                                'epoch': epoch + 1,
                             }, checkpoint_path)
 
                 print(f"BLEU-4 of the network on the {len(dev_dataloader)} dev videos: {test_stats['bleu4']:.2f}")
@@ -180,6 +184,8 @@ def main(args):
                         for checkpoint_path in checkpoint_paths:
                             utils.save_on_master({
                                 'model': get_requires_grad_dict(model_without_ddp),
+                                'optimizer': optimizer.state_dict(),
+                                'epoch': epoch + 1,
                             }, checkpoint_path)
 
                 print(f"PI accuracy of the network on the {len(dev_dataloader)} dev videos: {test_stats['top1_acc_pi']:.2f}")
@@ -193,6 +199,8 @@ def main(args):
                         for checkpoint_path in checkpoint_paths:
                             utils.save_on_master({
                                 'model': get_requires_grad_dict(model_without_ddp),
+                                'optimizer': optimizer.state_dict(),
+                                'epoch': epoch + 1,
                             }, checkpoint_path)
                             
                 print(f"WER of the network on the {len(dev_dataloader)} dev videos: {test_stats['wer']:.2f}")
@@ -310,6 +318,14 @@ def evaluate(args, data_loader, model, model_without_ddp, phase):
 
     tgt_pres = pad_sequence(tgt_pres,batch_first=True,padding_value=padding_value)
     tgt_pres = tokenizer.batch_decode(tgt_pres, skip_special_tokens=True)
+
+
+    print("\nPredizioni vs Target:\n")
+    for i, (pred, ref) in enumerate(zip(tgt_pres, tgt_refs)):
+        print(f"[ESEMPIO {i}]")
+        print(f"  Target    : {ref}")
+        print(f"  Prediction: {pred}")
+        print("-" * 60)
 
     # fix mt5 tokenizer bug
     # per ottenere match perfetto a livello di carattere 
