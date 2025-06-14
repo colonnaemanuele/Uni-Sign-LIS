@@ -23,7 +23,7 @@ def main(args):
 
     print(f"Creating dataset:")
     online_data = LIS_Dataset_online(args=args)
-    online_data.rgb_data = args.online_video
+    online_data.rgb_data = args.rgb_video
     online_data.pose_data = pose_data
 
     online_sampler = torch.utils.data.SequentialSampler(online_data)
