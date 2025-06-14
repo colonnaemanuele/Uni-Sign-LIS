@@ -102,7 +102,9 @@ if __name__ == '__main__':
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
     parser = argparse.ArgumentParser('Uni-Sign inference script', parents=[utils.get_args_parser()])
+    parser.add_argument("--rgb_video", required=True, help="Path to rgb video prepared .mp4 file")
     parser.add_argument("--pose_pkl", required=True, help="Path to precomputed pose .pkl file")
+    
 
     args = parser.parse_args()
 
