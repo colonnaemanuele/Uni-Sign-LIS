@@ -55,19 +55,22 @@ def main(args):
         raise NotImplementedError
 
     model.eval()
-    model.to(torch.bfloat16)
+    if torch.cuda.is_available():
+        model.to(torch.bfloat16)
+        target_dtype = torch.bfloat16
+    else:
+        model.to(torch.float32)
+        target_dtype = torch.float32
 
-    inference(online_dataloader, model)
+    inference(online_dataloader, model, target_dtype, device)
 
 
-def inference(data_loader, model):
+def inference(data_loader, model, target_dtype, device):
     model.eval()
     metric_logger = utils.MetricLogger(delimiter="  ")
     header = 'Test:'
 
-    target_dtype = torch.float32  # bfloat16 non supportato su CPU
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
+
     with torch.no_grad():
         tgt_pres = []
 
@@ -116,11 +119,16 @@ if __name__ == '__main__':
     main(args)
 
 """
-python run_inference.py \
-  --online_video /path/to/video_01.mp4 \
-  --pose_pkl /path/to/video_01.pkl \
-  --finetune /path/to/best_checkpoint.pth \
-  --output_dir ./results \
-  --dataset LIS \
-  --task SLT
+rgb_format_path = "/content/drive/MyDrive/LIS3_TEST/rgb_format_resized/08_11_2023_20.mp4"
+pose_format_path = "/content/drive/MyDrive/LIS3_TEST/pose_format/08_11_2023_20.pkl"
+stage3_best_checkpoint_path = "/content/drive/MyDrive/Uni-Sign-Output/stage3_finetuning_4/checkpoint_0.pth"
+output_dir = "./out/results"
+
+!python3.9 /content/Uni-Sign-LIS/online_inference.py\
+  --rgb_video {rgb_format_path} \
+  --pose_pkl {pose_format_path} \
+  --finetune {stage3_best_checkpoint_path} \
+  --output_dir {output_dir} \
+  --rgb_support 
 """
+
