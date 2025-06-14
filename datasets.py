@@ -699,7 +699,7 @@ class LIS_Dataset(Base_Dataset):
 
 class LIS_Dataset_online(Base_Dataset):
     def __init__(self, args):
-        super(S2T_Dataset_online, self).__init__()
+        super(LIS_Dataset_online, self).__init__()
         self.args = args
         self.rgb_support = self.args.rgb_support
         self.max_length = args.max_length
