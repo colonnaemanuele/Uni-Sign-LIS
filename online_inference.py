@@ -36,7 +36,8 @@ def main(args):
 
     print(f"Creating model:")
     model = Uni_Sign(args=args)
-    model.cuda()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
     model.train()
     for name, param in model.named_parameters():
         if param.requires_grad:
@@ -64,8 +65,9 @@ def inference(data_loader, model):
     metric_logger = utils.MetricLogger(delimiter="  ")
     header = 'Test:'
 
-    target_dtype = torch.bfloat16
-
+    target_dtype = torch.float32  # bfloat16 non supportato su CPU
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
     with torch.no_grad():
         tgt_pres = []
 
@@ -73,7 +75,7 @@ def inference(data_loader, model):
             if target_dtype is not None:
                 for key in src_input.keys():
                     if isinstance(src_input[key], torch.Tensor):
-                        src_input[key] = src_input[key].to(target_dtype).cuda()
+                        src_input[key] = src_input[key].to(target_dtype).to(device)
 
             stack_out = model(src_input, tgt_input)
 
@@ -89,7 +91,7 @@ def inference(data_loader, model):
     tokenizer = model.mt5_tokenizer
     padding_value = tokenizer.eos_token_id
 
-    pad_tensor = torch.ones(150 - len(tgt_pres[0])).cuda() * padding_value
+    pad_tensor = torch.ones(150 - len(tgt_pres[0])).to(device) * padding_value
     tgt_pres[0] = torch.cat((tgt_pres[0], pad_tensor.long()), dim=0)
 
     tgt_pres = pad_sequence(tgt_pres, batch_first=True, padding_value=padding_value)
