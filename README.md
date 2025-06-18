@@ -1,8 +1,8 @@
 <h3 align="center"><a href="" style="color:#9C276A">
-Uni-Sign: Toward Unified Sign Language Understanding at Scale</a></h3>
+Uni-Sign: Toward Unified Sign Language Understanding at Scale for Italian Sign Dataset</a></h3>
 
 
-[![arXiv](https://img.shields.io/badge/Arxiv-2501.15187-AD1C18.svg?logo=arXiv)](https://arxiv.org/abs/2501.15187) 
+<!-- [![arXiv](https://img.shields.io/badge/Arxiv-2501.15187-AD1C18.svg?logo=arXiv)](https://arxiv.org/abs/2501.15187) 
 [![CSL-Dataset](https://img.shields.io/badge/HuggingFace🤗-%20CSL%20News-blue.svg)](https://huggingface.co/datasets/ZechengLi19/CSL-News)
 [![CSL-Dataset](https://img.shields.io/badge/BaiDu☁-%20CSL%20News-green.svg)](https://pan.baidu.com/s/17W6kIreNMHYtD4y2llKmDg?pwd=ncvo) 
 
@@ -13,19 +13,19 @@ Uni-Sign: Toward Unified Sign Language Understanding at Scale</a></h3>
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/uni-sign-toward-unified-sign-language/gloss-free-sign-language-translation-on-csl)](https://paperswithcode.com/sota/gloss-free-sign-language-translation-on-csl?p=uni-sign-toward-unified-sign-language)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/uni-sign-toward-unified-sign-language/gloss-free-sign-language-translation-on-2)](https://paperswithcode.com/sota/gloss-free-sign-language-translation-on-2?p=uni-sign-toward-unified-sign-language)
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/uni-sign-toward-unified-sign-language/gloss-free-sign-language-translation-on-3)](https://paperswithcode.com/sota/gloss-free-sign-language-translation-on-3?p=uni-sign-toward-unified-sign-language)
-</h5>
+</h5> -->
 
 ![Uni-Sign](docs/framework.png)
 
 
 ## 🛠️ Installation
-We suggest to create a new conda environment. 
+We suggest to create a new uv environment. 
 ```bash
 # create environment
-conda create --name Uni-Sign python=3.9
-conda activate Uni-Sign
+uv venv python 3.10
+source .venv/bin/activate
 # install other relevant dependencies
-pip install -r requirements.txt
+uv add -r requirements.txt
 ```
 
 ## Keypoints
@@ -60,21 +60,21 @@ Tutti gli script devono essere eseguiti nella directory Uni-Sign .
 ### Training
 **Stage 1**: pose-only pre-training.
 ```bat
-./script/LIS_train_stage1.bat
+./script/LIS_train_stage1.sh
 ```
 **Stage 2**: RGB-pose pre-training.
 ```bat
-./script/LIS_train_stage2.bat
+./script/LIS_train_stage2.sh
 ```
 **Stage 3**: downstream fine-tuning.
 ```bat
-./script/LIS_train_stage3.bat
+./script/LIS_train_stage3.sh
 ```
 
 ### Evaluation
 Dopo aver completato lo stage 3 fine-tuning, per valutare le performance : 
 ```bat
-./script/LIS_eval_stage3.bat
+./script/LIS_eval.sh
 ```
 
 ## 👍 Acknowledgement
