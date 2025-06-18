@@ -30,7 +30,7 @@ uv add -r requirements.txt
 
 ## Keypoints
 
-If you need the dataset, please contact the owner [Emanuele Colonna](colonnaemanuele.github.io) for request.
+If you need the dataset, please contact the owner [Emanuele Colonna](https://colonnaemanuele.github.io) for request.
 
 I keypoints dei video devono già essere stati estratti, usando il modello RTTMPose-x, e salvati in formato `pkl`.
 
