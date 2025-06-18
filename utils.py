@@ -452,8 +452,7 @@ def get_args_parser():
     parser.add_argument('--epochs', default=20, type=int)
 
     # distributed training parameters
-    parser.add_argument('--world_size', default=1, type=int,
-                        help='number of distributed processes')
+    parser.add_argument('--world_size', default=1, type=int, help='number of distributed processes')
     parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
     parser.add_argument('--local_rank', default=0, type=int)
     parser.add_argument('--local-rank', default=0, type=int)
@@ -463,38 +462,25 @@ def get_args_parser():
     parser.add_argument('--finetune', default='', help='finetune from checkpoint')
 
     # * Optimizer parameters
-    parser.add_argument('--opt', default='adamw', type=str, metavar='OPTIMIZER',
-                        help='Optimizer (default: "adamw"')
-    parser.add_argument('--opt-eps', default=1.0e-09, type=float, metavar='EPSILON',
-                        help='Optimizer Epsilon (default: 1.0e-09)')
-    parser.add_argument('--opt-betas', default=None, type=float, nargs='+', metavar='BETA',
-                        help='Optimizer Betas (default: [0.9, 0.98], use opt default)')
-    parser.add_argument('--clip-grad', type=float, default=None, metavar='NORM',
-                        help='Clip gradient norm (default: None, no clipping)')
-    parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
-                        help='SGD momentum (default: 0.9)')
-    parser.add_argument('--weight-decay', type=float, default=0.0001,
-                        help='weight decay (default: 0.05)')
+    parser.add_argument('--opt', default='adamw', type=str, metavar='OPTIMIZER', help='Optimizer (default: "adamw"')
+    parser.add_argument('--opt-eps', default=1.0e-09, type=float, metavar='EPSILON', help='Optimizer Epsilon (default: 1.0e-09)')
+    parser.add_argument('--opt-betas', default=None, type=float, nargs='+', metavar='BETA', help='Optimizer Betas (default: [0.9, 0.98], use opt default)')
+    parser.add_argument('--clip-grad', type=float, default=None, metavar='NORM', help='Clip gradient norm (default: None, no clipping)')
+    parser.add_argument('--momentum', type=float, default=0.9, metavar='M', help='SGD momentum (default: 0.9)')
+    parser.add_argument('--weight-decay', type=float, default=0.0001, help='weight decay (default: 0.05)')
     
-    parser.add_argument('--sched', default='cosine', type=str, metavar='SCHEDULER',
-                        help='LR scheduler (default: "cosine"')
-    parser.add_argument('--lr', type=float, default=1.0e-3, metavar='LR',
-                        help='learning rate (default: 5e-4)')
-    parser.add_argument('--min-lr', type=float, default=1.0e-08, metavar='LR',
-                        help='lower lr bound for cyclic schedulers that hit 0 (1e-5)')
-    parser.add_argument('--warmup-epochs', type=float, default=0, metavar='N',
-                        help='epochs to warmup LR, if scheduler supports')
+    parser.add_argument('--sched', default='cosine', type=str, metavar='SCHEDULER', help='LR scheduler (default: "cosine"')
+    parser.add_argument('--lr', type=float, default=1.0e-3, metavar='LR', help='learning rate (default: 5e-4)')
+    parser.add_argument('--min-lr', type=float, default=1.0e-08, metavar='LR', help='lower lr bound for cyclic schedulers that hit 0 (1e-5)')
+    parser.add_argument('--warmup-epochs', type=float, default=0, metavar='N', help='epochs to warmup LR, if scheduler supports')
 
      # * Baise params
-    parser.add_argument('--output_dir', default='',
-                        help='path where to save, empty for no saving')
+    parser.add_argument('--output_dir', default='', help='path where to save, empty for no saving')
     parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--eval', action='store_true', help='Perform evaluation only')
     parser.add_argument('--num_workers', default=8, type=int)
-    parser.add_argument('--pin-mem', action='store_true',
-                        help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
-    parser.add_argument('--no-pin-mem', action='store_false', dest='pin_mem',
-                        help='')
+    parser.add_argument('--pin-mem', action='store_true', help='Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.')
+    parser.add_argument('--no-pin-mem', action='store_false', dest='pin_mem', help='')
     parser.set_defaults(pin_mem=True)
 
     # deepspeed features

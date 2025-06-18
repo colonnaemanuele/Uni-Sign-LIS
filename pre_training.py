@@ -30,8 +30,7 @@ def main(args):
     utils.set_seed(args.seed)
 
     print(f"Creating dataset:")
-    train_data = LIS_Dataset(path=train_label_paths[args.dataset], 
-                                  args=args, phase='train')
+    train_data = LIS_Dataset(path=train_label_paths[args.dataset], args=args, phase='train')
     print(train_data)
     
     
