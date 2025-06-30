@@ -87,7 +87,7 @@ def load_part_kp(skeletons, confs, force_ok=False):
 
             # le altre parti verranno normalizzate usando lo stesso scale del corpo
 
-            assert not scale is None
+            assert scale is not None
             result = np.concatenate([kps, confidences[...,None]], axis=-1)
             if scale==0:
                 result = np.zeros(result.shape)
@@ -301,9 +301,9 @@ def load_support_rgb_dict(tmp, skeletons, confs, full_path, data_transform):
         
     image_size = 112
     all_indices = []
-    if not left_sampled_indices is None:
+    if left_sampled_indices is not None:
         all_indices.append(left_sampled_indices)
-    if not right_sampled_indices is None:
+    if right_sampled_indices is not None:
         all_indices.append(right_sampled_indices)
     if len(all_indices) == 0:
         support_rgb_dict['left_sampled_indices'] = torch.tensor([-1])
@@ -369,7 +369,7 @@ def load_support_rgb_dict(tmp, skeletons, confs, full_path, data_transform):
 
     for idx, img in enumerate(imgs):
         mapping_idx = sampled_indices[idx]
-        if not left_sampled_indices is None and left_idx < len(left_sampled_indices) and mapping_idx == left_sampled_indices[left_idx]:
+        if left_sampled_indices is not None and left_idx < len(left_sampled_indices) and mapping_idx == left_sampled_indices[left_idx]:
             box = left_new_box[left_idx]
             
             img_draw = np.uint8(copy.deepcopy(img))[box[1]:box[3],box[0]:box[2],:]
@@ -380,7 +380,7 @@ def load_support_rgb_dict(tmp, skeletons, confs, full_path, data_transform):
             left_hands[left_idx] = f_img
             left_idx += 1
             
-        if not right_sampled_indices is None and right_idx < len(right_sampled_indices) and mapping_idx == right_sampled_indices[right_idx]:
+        if right_sampled_indices is not None and right_idx < len(right_sampled_indices) and mapping_idx == right_sampled_indices[right_idx]:
             box = right_new_box[right_idx]
             
             img_draw = np.uint8(copy.deepcopy(img))[box[1]:box[3],box[0]:box[2],:]
@@ -528,7 +528,7 @@ class LIS_Dataset(Base_Dataset):
             self.annotation = json.load(f)
 
         
-        print(f"Dataset: LIS")
+        print("Dataset: LIS")
         self.pose_dir = pose_dirs[args.dataset]
         self.rgb_dir = rgb_dirs[args.dataset]
         print(f"pose_dir: {self.pose_dir}")

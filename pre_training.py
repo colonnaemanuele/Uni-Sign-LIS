@@ -1,5 +1,5 @@
-from pickletools import optimize
 import torch
+import torch.distributed
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 ##############
@@ -12,7 +12,9 @@ from datasets import LIS_Dataset
 
 import os
 import time
-import argparse, json, datetime
+import argparse
+import json
+import datetime
 from pathlib import Path
 import math
 import sys
@@ -21,7 +23,6 @@ from models import get_requires_grad_dict
 from transformers import get_scheduler
 from SLRT_metrics import translation_performance
 from config import *
-from typing import Iterable, Optional
 
 def main(args):
     utils.init_distributed_mode_ds(args)
@@ -29,7 +30,7 @@ def main(args):
     print("\nargs : \n",args)
     utils.set_seed(args.seed)
 
-    print(f"Creating dataset:")
+    print("Creating dataset:")
     train_data = LIS_Dataset(path=train_label_paths[args.dataset], args=args, phase='train')
     print(train_data)
     
@@ -58,7 +59,7 @@ def main(args):
                                  sampler=dev_sampler, 
                                  pin_memory=args.pin_mem)
 
-    print(f"Creating model:")
+    print("Creating model:")
     model = Uni_Sign(
                     args=args,
                     )
@@ -89,9 +90,12 @@ def main(args):
 
     model_without_ddp = model
     if args.distributed:
-        model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
-        model_without_ddp = model.module
+        if not torch.distributed.is_initialized():
+            print("[WARNING] Distributed requested but process group not initialized. Skipping DDP wrapping.")
+        else:
+            model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
+            model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
+            model_without_ddp = model.module
     n_parameters = utils.count_parameters_in_MB(model_without_ddp)
     print(f'number of params: {n_parameters}M')
 
@@ -111,9 +115,8 @@ def main(args):
     model, optimizer, lr_scheduler = utils.init_deepspeed(args, model, optimizer, lr_scheduler)
     model_without_ddp = model.module.module
     """
-    ##################################
+
     model_without_ddp = model
-    ##################################
     # print(model_without_ddp)
     print(optimizer)
 
@@ -134,7 +137,7 @@ def main(args):
         if args.distributed:
             train_sampler.set_epoch(epoch)
         
-        train_stats = train_one_epoch(args, model, train_dataloader, optimizer, epoch, model_without_ddp=model_without_ddp)
+        train_stats = train_one_epoch(args, model, train_dataloader, optimizer, epoch, model_without_ddp=model_without_ddp, lr_scheduler=lr_scheduler)
 
         if args.output_dir:
             checkpoint_paths = [output_dir / f'checkpoint_{epoch}.pth']
@@ -171,10 +174,8 @@ def main(args):
 
 
 
-def train_one_epoch(args, model, data_loader, optimizer, epoch, model_without_ddp):
-    
+def train_one_epoch(args, model, data_loader, optimizer, epoch, model_without_ddp, lr_scheduler=None):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
     model.train()
 
     metric_logger = utils.MetricLogger(delimiter="  ")
@@ -192,11 +193,9 @@ def train_one_epoch(args, model, data_loader, optimizer, epoch, model_without_dd
         if (step + 1) % args.quick_break == 0:
             if args.output_dir:
                 output_dir = Path(args.output_dir)
-                checkpoint_paths = [output_dir / f'checkpoint.pth']
+                checkpoint_paths = [output_dir / 'checkpoint.pth']
                 for checkpoint_path in checkpoint_paths:
-                    utils.save_on_master({
-                        'model': get_requires_grad_dict(model_without_ddp),
-                    }, checkpoint_path)
+                    utils.save_on_master({'model': get_requires_grad_dict(model_without_ddp),}, checkpoint_path)
 
         """if target_dtype != None:"""
         for key in src_input.keys():
@@ -205,7 +204,6 @@ def train_one_epoch(args, model, data_loader, optimizer, epoch, model_without_dd
                 
 
         stack_out = model(src_input, tgt_input)
-        
         total_loss = stack_out['loss']
         """
         model.backward(total_loss)
@@ -214,6 +212,8 @@ def train_one_epoch(args, model, data_loader, optimizer, epoch, model_without_dd
 
         total_loss.backward()
         optimizer.step()
+        if lr_scheduler is not None:
+            lr_scheduler.step()
         optimizer.zero_grad()
 
         loss_value = total_loss.item()
@@ -231,7 +231,6 @@ def train_one_epoch(args, model, data_loader, optimizer, epoch, model_without_dd
     return  {k: meter.global_avg for k, meter in metric_logger.meters.items()}
 
 def evaluate(args, data_loader, model, model_without_ddp):
-    
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.eval()
 
@@ -271,7 +270,7 @@ def evaluate(args, data_loader, model, model_without_ddp):
                                                 num_beams = 4,
                         )
             
-            print(f"\n[DEBUG] Output grezzo (token IDs):")
+            print("\n[DEBUG] Output grezzo (token IDs):")
             for i, out in enumerate(output):
                 print(f"Output[{i}]: {out.tolist()}")
 
