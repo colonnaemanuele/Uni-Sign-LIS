@@ -2,7 +2,7 @@ output_dir=out/stage2_pretraining
 
 ckpt_path=out/stage1_pretraining/best_checkpoint.pth
 
-deepspeed --include localhost:0,1,2,3 --master_port 29511 pre_training.py \
+uv run deepspeed pre_training.py \
    --batch-size 4 \
    --gradient-accumulation-steps 8 \
    --epochs 5 \

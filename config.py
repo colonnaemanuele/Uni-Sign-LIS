@@ -2,28 +2,28 @@ mt5_path = "./pretrained_weight/mt5-base"
 
 # label paths
 train_label_paths = {
-                    "LIS": "/content/drive/MyDrive/LIS_DEF/data/LIS_Labels.json",
-                    "LIS_TEST": "/content/drive/MyDrive/LIS3_TEST/data/LIS_Test_Labels.json"
+                    "LIS": "LIS/Continuous/LIS_Labels.json",
+                    "LIS_TRAIN": "LIS/Continuous/LIS_Labels_train.json"
                     }
 
 dev_label_paths = {
-                    "LIS": "/content/drive/MyDrive/LIS_DEF/data/LIS_Labels.json",
-                    "LIS_TEST": "/content/drive/MyDrive/LIS3_TEST/data/LIS_Test_Labels.json"
+                    "LIS": "LIS/Continuous/LIS_Labels.json",
+                    "LIS_DEV": "LIS/Continuous/LIS_Labels_dev.json"
                     }
 
 test_label_paths = {
-                    "LIS": "/content/drive/MyDrive/LIS_DEF/data/LIS_Labels.json",
-                    "LIS_TEST": "/content/drive/MyDrive/LIS3_TEST/data/LIS_Test_Labels.json"
+                    "LIS": "LIS/Continuous/LIS_Labels.json",
+                    "LIS_TEST": "LIS/Continuous/LIS_Labels_test.json"
                     }
 
 # video paths
 rgb_dirs = {
-            "LIS": "/content/drive/MyDrive/LIS_DEF/rgb_format_resized",
-            "LIS_TEST": "/content/drive/MyDrive/LIS3_TEST/rgb_format_resized"
+            "LIS": "LIS/Continuous/cropped_videos",
+            "LIS_TEST": "LIS/Continuous/cropped_videos"
             }
 
 # pose paths
 pose_dirs = {
-            "LIS": "/content/drive/MyDrive/LIS_DEF/pose_format",
-            "LIS_TEST": "/content/drive/MyDrive/LIS3_TEST/pose_format"
+            "LIS": "LIS/Continuous/pose_format",
+            "LIS_TEST": "LIS/Continuous/pose_format"
             }

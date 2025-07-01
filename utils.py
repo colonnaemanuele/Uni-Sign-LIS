@@ -12,14 +12,14 @@ Mostly copy-paste from torchvision references.
 """
 import io
 import os
-import time,random
+import time
+import random
 import numpy as np
 from collections import defaultdict, deque
 import datetime
 
 import torch
 import torch.distributed as dist
-import torch.nn.functional as F
 
 import pickle
 import gzip
@@ -28,9 +28,6 @@ import gzip
 # global definition
 #import deepspeed
 
-import torch
-import torch.nn.functional as F
-from torch import Tensor
 import argparse
 import torch.backends.cudnn as cudnn
 
@@ -276,33 +273,12 @@ def init_distributed_mode_ds(args):
 
     args.distributed = True
 
-    """
     torch.cuda.set_device(args.gpu)
-    """
-
-    #############################
-    if torch.cuda.is_available():
-        torch.cuda.set_device(args.gpu)
-    else:
-        args.gpu = 'cpu'
-        print("⚠️ GPU non disponibile. Uso CPU.")
-
-    #############################
-
     args.dist_backend = 'nccl'
     print('| distributed init (rank {}): {}'.format(
         args.rank, args.dist_url), flush=True)
-    # torch.distributed.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
-    #                                      world_size=args.world_size, rank=args.rank)
-    
-    """
-    deepspeed.init_distributed()
-    """
-    ##########################
-    args.distributed = False
-    args.gpu = 'cpu'
-    print("⚠️ DeepSpeed disattivato. Uso CPU.")
-    #########################
+    torch.distributed.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
+                                         world_size=args.world_size, rank=args.rank)
     torch.distributed.barrier()
     setup_for_distributed(args.rank == 0)
 

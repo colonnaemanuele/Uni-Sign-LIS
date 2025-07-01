@@ -3,7 +3,7 @@ import torch.distributed
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 ##############
-from torch.utils.data import RandomSampler, SequentialSampler
+from torch.utils.data import RandomSampler, SequentialSampler, DistributedSampler
 ##############
 
 from models import Uni_Sign
@@ -22,7 +22,7 @@ from timm.optim import create_optimizer
 from models import get_requires_grad_dict
 from transformers import get_scheduler
 from SLRT_metrics import translation_performance
-from config import *
+from config import train_label_paths, dev_label_paths
 
 def main(args):
     utils.init_distributed_mode_ds(args)
@@ -34,8 +34,10 @@ def main(args):
     train_data = LIS_Dataset(path=train_label_paths[args.dataset], args=args, phase='train')
     print(train_data)
     
-    
-    train_sampler = RandomSampler(train_data)
+    if args.distributed:
+        train_sampler = DistributedSampler(train_data)
+    else:
+        train_sampler = RandomSampler(train_data) 
     
     train_dataloader = DataLoader(train_data,
                                  batch_size=args.batch_size, 
@@ -134,7 +136,7 @@ def main(args):
     print(f"Start training for {args.epochs} epochs")
 
     for epoch in range(0, args.epochs):
-        if args.distributed:
+        if args.distributed and hasattr(train_sampler, "set_epoch"):
             train_sampler.set_epoch(epoch)
         
         train_stats = train_one_epoch(args, model, train_dataloader, optimizer, epoch, model_without_ddp=model_without_ddp, lr_scheduler=lr_scheduler)
@@ -343,7 +345,7 @@ def evaluate(args, data_loader, model, model_without_ddp):
 if __name__ == '__main__':
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-    parser = argparse.ArgumentParser('Uni-Sign scripts', parents=[utils.get_args_parser()])
+    parser = argparse.ArgumentParser('Uni-Sign-LIS scripts', parents=[utils.get_args_parser()])
     args = parser.parse_args()
     
     if args.output_dir:

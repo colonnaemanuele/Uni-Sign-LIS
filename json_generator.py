@@ -44,7 +44,7 @@ for date_folder in sorted(os.listdir(VIDEO_BASE)):
         continue
 
     for idx, row in df.iterrows():
-        text = str(row[0]).strip()
+        text = str(row[2]).strip()
         video_filename = f"{idx}.mp4"
         pose_filename = f"{idx}.pkl"
 
