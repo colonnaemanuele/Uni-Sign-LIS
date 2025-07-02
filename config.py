@@ -2,18 +2,15 @@ mt5_path = "./pretrained_weight/mt5-base"
 
 # label paths
 train_label_paths = {
-                    "LIS": "LIS/Continuous/LIS_Labels.json",
-                    "LIS_TRAIN": "LIS/Continuous/LIS_Labels_train.json"
+                    "LIS": "LIS/Continuous/LIS_Labels_train.json"
                     }
 
 dev_label_paths = {
-                    "LIS": "LIS/Continuous/LIS_Labels.json",
-                    "LIS_DEV": "LIS/Continuous/LIS_Labels_dev.json"
+                    "LIS": "LIS/Continuous/LIS_Labels_dev.json"
                     }
 
 test_label_paths = {
-                    "LIS": "LIS/Continuous/LIS_Labels.json",
-                    "LIS_TEST": "LIS/Continuous/LIS_Labels_test.json"
+                    "LIS": "LIS/Continuous/LIS_Labels_test.json"
                     }
 
 # video paths
