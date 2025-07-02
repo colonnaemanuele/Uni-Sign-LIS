@@ -1,0 +1,24 @@
+#!/bin/bash
+
+source .venv/bin/activate
+
+# Create logs directory if it doesn't exist
+mkdir -p logs
+
+# Create log file with timestamp
+LOG_FILE="logs/training_$(date +%Y%m%d_%H%M%S).log"
+output_dir=out/stage1_pretraining
+
+echo "Logging to: $LOG_FILE"
+
+# uv run deepspeed pre_training.py \
+uv run deepspeed --include localhost:0,1,2,3 --master_port 29511 pre_training.py \
+   --batch-size 16 \
+   --gradient-accumulation-steps 8 \
+   --epochs 40 \
+   --opt AdamW \
+   --lr 3e-4 \
+   --quick_break 2048 \
+   --output_dir $output_dir \
+   --dataset LIS 2>&1 | tee "$LOG_FILE" \
+   $@

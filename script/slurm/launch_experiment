@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#SBATCH -A IscrC_EXAM
+#SBATCH -p boost_usr_prod
+#SBATCH --qos boost_qos_lprod
+#SBATCH --time 4-00:00:00
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem=16000
+#SBATCH --job-name=pretrained_model
+#SBATCH --out=logs/pretrained.out
+#SBATCH --err=logs/pretrained.out
+
+srun script/slurm/launch_experiment_exe $@
