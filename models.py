@@ -161,14 +161,7 @@ class Uni_Sign(nn.Module):
         # enable_autocast = self.device != torch.device("cpu")
         enable_autocast = True
 
-        """
         if enable_autocast:
-            return torch.cuda.amp.autocast(dtype=dtype)
-        else:
-            return contextlib.nullcontext()
-        """
-
-        if enable_autocast and torch.cuda.is_available():
             return torch.cuda.amp.autocast(dtype=dtype)
         else:
             return contextlib.nullcontext()
@@ -232,13 +225,9 @@ class Uni_Sign(nn.Module):
 
         body_feat = None
         for part in self.modes:
+            input_tensor = src_input[part].to(torch.bfloat16)
             # project position to hidden dim
-            """
-            proj_feat = self.proj_linear[part](src_input[part]).permute(0,3,1,2) #B,C,T,V
-            """
-            ################################################
-            proj_feat = self.proj_linear[part](src_input[part].float()).permute(0,3,1,2)
-            ################
+            proj_feat = self.proj_linear[part](input_tensor).permute(0,3,1,2) #B,C,T,V
             # spatial gcn forward
             gcn_feat = self.gcn_modules[part](proj_feat)
             if part == 'body':
