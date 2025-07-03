@@ -27,12 +27,9 @@ from config import train_label_paths, dev_label_paths
 def main(args):
     utils.init_distributed_mode_ds(args)
 
-    print("\nargs : \n",args)
+    print(args)
     utils.set_seed(args.seed)
-
-    print("Creating dataset:")
     train_data = LIS_Dataset(path=train_label_paths[args.dataset], args=args, phase='train')
-    print(train_data)
     
     if args.distributed:
         train_sampler = DistributedSampler(train_data)
@@ -48,12 +45,8 @@ def main(args):
                                  drop_last=True)
 
 
-    dev_data = LIS_Dataset(path=dev_label_paths[args.dataset], 
-                                args=args, phase='dev')
-    print(dev_data)
-   
+    dev_data = LIS_Dataset(path=dev_label_paths[args.dataset], args=args, phase='dev')
     dev_sampler = SequentialSampler(dev_data)
-    
     dev_dataloader = DataLoader(dev_data,
                                  batch_size=args.batch_size,
                                  num_workers=args.num_workers, 
@@ -61,12 +54,7 @@ def main(args):
                                  sampler=dev_sampler, 
                                  pin_memory=args.pin_mem)
 
-    print("Creating model:")
-    model = Uni_Sign(
-                    args=args,
-                    )
-  
-    
+    model = Uni_Sign(args=args)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
    
@@ -99,8 +87,6 @@ def main(args):
             model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
             model_without_ddp = model.module
     n_parameters = utils.count_parameters_in_MB(model_without_ddp)
-    print(f'number of params: {n_parameters}M')
-
     optimizer = create_optimizer(args, model_without_ddp)
     
     if args.quick_break <= 0:
@@ -113,28 +99,20 @@ def main(args):
                 num_training_steps=int(args.epochs * len(train_dataloader)/args.gradient_accumulation_steps),
             )
     
-    """
     model, optimizer, lr_scheduler = utils.init_deepspeed(args, model, optimizer, lr_scheduler)
     model_without_ddp = model.module.module
-    """
-
-    model_without_ddp = model
-    # print(model_without_ddp)
-    print(optimizer)
 
     output_dir = Path(args.output_dir)
-
     start_time = time.time()
     max_accuracy = 0
 
     if args.eval:
         if utils.is_main_process():
-            print("📄 test result")
+            print("Evaluating only")
             test_stats = evaluate(args, dev_dataloader, model, model_without_ddp)
-
         return 
-    print(f"Start training for {args.epochs} epochs")
 
+    print(f"Start training for {args.epochs} epochs")
     for epoch in range(0, args.epochs):
         if args.distributed and hasattr(train_sampler, "set_epoch"):
             train_sampler.set_epoch(epoch)
@@ -179,18 +157,16 @@ def main(args):
 def train_one_epoch(args, model, data_loader, optimizer, epoch, model_without_ddp, lr_scheduler=None):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.train()
-
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
     header = 'Epoch: [{}/{}]'.format(epoch, args.epochs)
     print_freq = 10
     optimizer.zero_grad()
 
-    """
     target_dtype = None
     if model.bfloat16_enabled():
         target_dtype = torch.bfloat16
-    """
+        
     for step, (src_input, tgt_input) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         if (step + 1) % args.quick_break == 0:
             if args.output_dir:
@@ -199,24 +175,17 @@ def train_one_epoch(args, model, data_loader, optimizer, epoch, model_without_dd
                 for checkpoint_path in checkpoint_paths:
                     utils.save_on_master({'model': get_requires_grad_dict(model_without_ddp),}, checkpoint_path)
 
-        """if target_dtype != None:"""
-        for key in src_input.keys():
-            if isinstance(src_input[key], torch.Tensor):
-                src_input[key] = src_input[key].to(device)
-                
+        if target_dtype is not None:
+            for key in src_input.keys():
+                if isinstance(src_input[key], torch.Tensor):
+                    src_input[key] = src_input[key].to(device)
+                    
 
         stack_out = model(src_input, tgt_input)
+        
         total_loss = stack_out['loss']
-        """
         model.backward(total_loss)
         model.step()
-        """
-
-        total_loss.backward()
-        optimizer.step()
-        if lr_scheduler is not None:
-            lr_scheduler.step()
-        optimizer.zero_grad()
 
         loss_value = total_loss.item()
         if not math.isfinite(loss_value):
@@ -235,32 +204,22 @@ def train_one_epoch(args, model, data_loader, optimizer, epoch, model_without_dd
 def evaluate(args, data_loader, model, model_without_ddp):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.eval()
-
     metric_logger = utils.MetricLogger(delimiter="  ")
     header = 'Test:'
 
-    """
     target_dtype = None
     if model.bfloat16_enabled():
         target_dtype = torch.bfloat16
-    """
         
     with torch.no_grad():
         tgt_pres = []
         tgt_refs = []
  
-        for step, (src_input, tgt_input) in enumerate(metric_logger.log_every(data_loader, 10, header)):
-            """if target_dtype != None:"""
-
-
-            print(f"[DEBUG] STEP {step} - Input al modello:")
-            for key, value in src_input.items():
-                if isinstance(value, torch.Tensor):
-                    print(f"{key}: shape {value.shape}, dtype {value.dtype}")
-
-            for key in src_input.keys():
-                if isinstance(src_input[key], torch.Tensor):
-                    src_input[key] = src_input[key].to(device)
+        for _, (src_input, tgt_input) in enumerate(metric_logger.log_every(data_loader, 10, header)):
+            if target_dtype is not None:
+                for key in src_input.keys():
+                    if isinstance(src_input[key], torch.Tensor):
+                        src_input[key] = src_input[key].to(device)
                     
             
             stack_out = model(src_input, tgt_input)
@@ -271,10 +230,6 @@ def evaluate(args, data_loader, model, model_without_ddp):
                                                 max_new_tokens=100, 
                                                 num_beams = 4,
                         )
-            
-            print("\n[DEBUG] Output grezzo (token IDs):")
-            for i, out in enumerate(output):
-                print(f"Output[{i}]: {out.tolist()}")
 
             for i in range(len(output)):
                 tgt_pres.append(output[i])
@@ -288,8 +243,6 @@ def evaluate(args, data_loader, model, model_without_ddp):
     print(f"[DEBUG] pad_token: {tokenizer.pad_token} ({tokenizer.pad_token_id})")
     print(f"[DEBUG] eos_token: {tokenizer.eos_token} ({tokenizer.eos_token_id})")
 
-    # DEBUG 4 - Controllo contenuto sequenze
-    print("\n[DEBUG] Verifica lunghezza sequenze e token speciali:")
     for i, seq in enumerate(tgt_pres):
         token_list = seq.tolist()
         print(f"Seq {i}: len={len(token_list)}, tokens={token_list}")
@@ -297,9 +250,7 @@ def evaluate(args, data_loader, model, model_without_ddp):
             print(f"Seq {i} contiene solo token speciali.")
     
     pad_tensor = torch.ones(150 - len(tgt_pres[0])).to(device) * padding_value
-
     tgt_pres[0] = torch.cat((tgt_pres[0],pad_tensor.long()),dim = 0)
-
     tgt_pres = pad_sequence(tgt_pres,batch_first=True,padding_value=padding_value)
 
  
