@@ -23,4 +23,5 @@ pretrained_weight/
 LIS
 nohup.out
 *.log
+*.out
 .vscode/launch.json
