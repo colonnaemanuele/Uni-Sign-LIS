@@ -12,4 +12,8 @@
 #SBATCH --out=logs/test.out
 #SBATCH --err=logs/test.out
 
+module load spack
+spack load cuda@12.2.91 2>/dev/null
+spack load ffmpeg@6.0 2>/dev/null
+
 srun script/slurm/launch_test_exe $@

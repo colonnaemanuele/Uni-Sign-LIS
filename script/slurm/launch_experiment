@@ -11,4 +11,8 @@
 #SBATCH --out=logs/pretrained.out
 #SBATCH --err=logs/pretrained.out
 
+module load spack
+spack load cuda@12.2.91 2>/dev/null
+spack load ffmpeg@6.0 2>/dev/null
+
 srun script/slurm/launch_experiment_exe $@
