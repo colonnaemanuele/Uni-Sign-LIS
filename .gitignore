@@ -25,3 +25,4 @@ nohup.out
 *.log
 *.out
 .vscode/launch.json
+.env

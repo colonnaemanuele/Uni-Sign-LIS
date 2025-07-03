@@ -1,18 +1,16 @@
 #!/bin/bash
+
+#SBATCH --account=IscrC_EXAM
 #SBATCH --job-name=move_data
 #SBATCH --partition=dcgp_usr_prod
-#SBATCH --qos dcgp_qos_dbg
-#SBATCH --account=IscrC_EXAM
+#SBATCH --qos normal
+#SBATCH --time=24:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16GB
-#SBATCH --time=00:30:00
 #SBATCH --output=logs/move_data_%j.out
 #SBATCH --error=logs/move_data_%j.err
-
-module load profile/base
-module load openssh
 
 mkdir -p logs
 LOG_FILE="logs/move_data_$(date +%Y%m%d_%H%M%S)_${SLURM_JOB_ID}.log"
@@ -30,13 +28,26 @@ log_message "Starting data move job on $(hostname)"
 log_message "Job ID: $SLURM_JOB_ID"
 log_message "Working directory: $(pwd)"
 
-# Configuration - Modify these variables according to your needs
-SOURCE_HOST="gandalf.di.uniba.it"
-SOURCE_USER="emanuele"
-SOURCE_PATH="/media/BarraCuda/emanuele/LIS/Continuous"
-DEST_PATH="/leonardo_work/IscrC_EXAM/emanuele/LIS"
-SSH_KEY_PATH="$HOME/.ssh/id_rsa"
-RSYNC_OPTIONS="-avz --progress --partial --human-readable"
+# Load configuration from .env file
+ENV_FILE="$(dirname "$(dirname "$(realpath "$0")")")/.env"
+if [ -f "$ENV_FILE" ]; then
+    log_message "Loading configuration from $ENV_FILE"
+    # Source the .env file
+    set -a  # automatically export all variables
+    source "$ENV_FILE"
+    set +a  # stop automatically exporting
+    log_message "Configuration loaded successfully"
+else
+    handle_error ".env file not found at $ENV_FILE"
+fi
+
+# Expand variables (in case they contain other variables like $HOME)
+SSH_KEY_PATH=$(eval echo "$SSH_KEY_PATH")
+
+log_message "Configuration:"
+log_message "  - Source: $SOURCE_USER@$SOURCE_HOST:$SOURCE_PATH"
+log_message "  - Destination: $DEST_PATH"
+log_message "  - SSH Key: $SSH_KEY_PATH"
 
 if [ ! -f "$SSH_KEY_PATH" ]; then
     handle_error "SSH key not found at $SSH_KEY_PATH"
