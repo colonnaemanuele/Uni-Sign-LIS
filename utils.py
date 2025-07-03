@@ -1,15 +1,14 @@
+# Copyright (c) 2015-present, Facebook, Inc.
+# All rights reserved.
+
 """
+Misc functions, including distributed helpers.
+Mostly copy-paste from torchvision references.
+
 This file is modified from:
 https://github.com/facebookresearch/deit/blob/main/utils.py
 """
 
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
-"""
-Misc functions, including distributed helpers.
-
-Mostly copy-paste from torchvision references.
-"""
 import io
 import os
 import time
@@ -17,6 +16,8 @@ import random
 import numpy as np
 from collections import defaultdict, deque
 import datetime
+import deepspeed
+from deepspeed.accelerator import get_accelerator
 
 import torch
 import torch.distributed as dist
@@ -230,9 +231,8 @@ def is_main_process():
 
 def save_on_master(*args, **kwargs):
     if is_main_process():
-        print("save ckpt begin")
+        print("Saving checkpoint...")
         torch.save(*args, **kwargs)
-        print("save ckpt finish")
 
 def init_distributed_mode(args):
     if 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
@@ -305,7 +305,8 @@ def cosine_scheduler(base_value, final_value, epochs):
     return schedule
 
 def cosine_scheduler_func(base_value, final_value, iters, epochs):
-    schedule = lambda x: final_value + 0.5 * (base_value - final_value) * (1 + np.cos(np.pi * x / epochs))
+    def schedule(x):
+        return final_value + 0.5 * (base_value - final_value) * (1 + np.cos(np.pi * x / epochs))
     return schedule(iters)
 
 def load_dataset_file(filename):
@@ -346,8 +347,6 @@ def get_train_ds_config(offload,
                         tb_name="",
                         args=''):
 
-    print("⚠️ DeepSpeed non disponibile. Uso configurazione placeholder.")
-
     device = "cpu" if offload else "none"
     data_type = "fp16"
     dtype_config = {"enabled": False}
@@ -358,7 +357,6 @@ def get_train_ds_config(offload,
     elif dtype == "bf16":
         data_type = "bfloat16"
         dtype_config = {"enabled": True}
-
     zero_opt_dict = {
         "stage": stage,
         "offload_param": {
@@ -372,17 +370,12 @@ def get_train_ds_config(offload,
         "stage3_prefetch_bucket_size": 3e7,
         "memory_efficient_linear": False
     }
-
+    
     if enable_mixed_precision_lora:
         zero_opt_dict["zero_quantized_nontrainable_weights"] = True
-        if torch.distributed.is_initialized():
-            world_size = torch.distributed.get_world_size()
-        else:
-            world_size = 1
-
-        if world_size != torch.cuda.device_count():
-            zero_opt_dict["zero_hpz_partition_size"] = torch.cuda.device_count()
-
+        if dist.get_world_size() != get_accelerator().device_count():
+            zero_opt_dict["zero_hpz_partition_size"] = get_accelerator(
+            ).device_count()
     return {
         "steps_per_print": 10,
         "zero_optimization": zero_opt_dict,
@@ -406,8 +399,30 @@ def get_train_ds_config(offload,
     }
 
 def init_deepspeed(args, model, optimizer, lr_scheduler):
-    print("⚠️ DeepSpeed non disponibile. Uso configurazione standard senza wrapping.")
-    return model, optimizer, lr_scheduler
+    ds_config = get_train_ds_config(
+        offload=args.offload,
+        dtype=args.dtype,
+        stage=args.zero_stage,
+        args=args
+    )
+
+    ds_config['train_micro_batch_size_per_gpu'] = args.batch_size
+    ds_config['gradient_accumulation_steps'] = args.gradient_accumulation_steps
+    ds_config['gradient_clipping'] = args.gradient_clipping
+
+    use_deepspeed = True
+    if use_deepspeed:
+        print("Using deepspeed to train...")
+        print("Initializing deepspeed...")
+        _wrapped_model, _optimizer, _, _lr_sched = deepspeed.initialize(
+            model=model,
+            optimizer=optimizer,
+            args=args,
+            config=ds_config,
+            lr_scheduler=lr_scheduler,
+            dist_init_required=True)
+    
+    return _wrapped_model, _optimizer, _lr_sched
 
 def set_seed(seed):
     torch.manual_seed(seed)
