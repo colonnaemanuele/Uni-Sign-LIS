@@ -44,7 +44,6 @@ def load_part_kp(skeletons, confs, force_ok=False):
             # left : keypoints [91–111]
             # right : keypoints [112–132]
             # face_all : keypoints [23–40], [83–90], [53]
-
             
             if part == 'body':
                 hand_kp2d = skeleton[[0] + [i for i in range(3, 11)], :]
@@ -422,10 +421,9 @@ def load_video_support_rgb(path, tmp):
 
 # build base dataset
 class Base_Dataset(Dataset.Dataset):
-
     def collate_fn(self, batch):
         
-        print(f"\nCollate chiamato su batch di dimensione: {len(batch)}")
+        # print(f"\nCollate chiamato su batch di dimensione: {len(batch)}")
 
         # pyTorch chiama collate_fn(batch) quando il DataLoader deve impacchettare una lista di campioni 
         # [item1, item2, ...] e costruire un batch con padding e tensori coerenti
@@ -508,67 +506,29 @@ class Base_Dataset(Dataset.Dataset):
 class LIS_Dataset(Base_Dataset):
 
     def __init__(self, path, args, phase):
-
-        print("\n#####################################################\nIntializing Dataset : \n")
-
         super(LIS_Dataset, self).__init__()
-
         self.args = args
         self.rgb_support = self.args.rgb_support
-        
         self.phase = phase
-        print(f"Fase : {self.phase}")
-
         self.max_length = args.max_length
-
-        path = pathlib.Path(path)
-        
-        print(f"Recupero le annotazioni da file json: {path}")
-        with path.open(encoding='utf-8') as f:
-            self.annotation = json.load(f)
-
-        
-        print("Dataset: LIS")
         self.pose_dir = pose_dirs[args.dataset]
         self.rgb_dir = rgb_dirs[args.dataset]
-        print(f"pose_dir: {self.pose_dir}")
-        print(f"rgb_dir: {self.rgb_dir}")
-      
-    
         
-        sum_sample = len(self.annotation)
-        print(f"Totale annotazioni caricate: {sum_sample}")
+        path = pathlib.Path(path)
+        with path.open(encoding='utf-8') as f:
+            self.annotation = json.load(f)
         
-        self.data_transform = transforms.Compose([
+        self.transform = transforms.Compose([
                                     transforms.ToTensor(),
                                     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]), 
                                     ])
-        print("Trasformazioni per immagini RGB definite con successo.")
-
-        # divisione in train/test deterministica
-
-        if phase == 'train':
-            self.start_idx = 0
-            self.end_idx = int(sum_sample * 0.8)
-            print(f"Train : indice di partenza campioni ({self.start_idx}) - indice di fine campioni ({self.end_idx})")
-        else:  # 'test'
-            self.start_idx = int(sum_sample * 0.8)
-            self.end_idx = sum_sample
-            print(f"Test : indice di partenza campioni ({self.start_idx}) - indice di fine campioni ({self.end_idx})")
-
-
-        print("\n#####################################################")
-        
         
     def __len__(self):
         # Restituisce il numero totale di campioni disponibili nel dataset, dipende dalla fase (train/test)
-        return self.end_idx - self.start_idx
+        return len(self.annotation)
     
 
     def __getitem__(self, index):
-
-        # Chiamato ogni volta che il DataLoader richiede un nuovo elemento con dato indice
-
         # quante volte tentare in caso di errore nel caricamento di un sample
         num_retries = 10  
 
@@ -577,12 +537,9 @@ class LIS_Dataset(Base_Dataset):
         for _ in range(num_retries):
 
             # estrae un sample dalla sottolista, annotations ha la struttura : { "video" : , "pose" : , "text" : }
-            sample = self.annotation[self.start_idx:self.end_idx][index]
+            sample = self.annotation[index]
 
-            # estrae il testo (annotazione)
             text = sample['text']
-
-            # estrae il nome del video
             name_sample = sample['video']
            
             try:
@@ -627,7 +584,7 @@ class LIS_Dataset(Base_Dataset):
         #########################################################################################################
 
 
-        print(f"Keypoints caricati da: {pose_path}")
+        # print(f"Keypoints caricati da: {pose_path}")
 
 
         full_path = os.path.join(self.rgb_dir, rgb_name)
