@@ -242,12 +242,6 @@ def evaluate(args, data_loader, model, model_without_ddp):
     print("\n[DEBUG] Token speciali del tokenizer:")
     print(f"[DEBUG] pad_token: {tokenizer.pad_token} ({tokenizer.pad_token_id})")
     print(f"[DEBUG] eos_token: {tokenizer.eos_token} ({tokenizer.eos_token_id})")
-
-    for i, seq in enumerate(tgt_pres):
-        token_list = seq.tolist()
-        print(f"Seq {i}: len={len(token_list)}, tokens={token_list}")
-        if all(t in [tokenizer.pad_token_id, tokenizer.eos_token_id] for t in token_list):
-            print(f"Seq {i} contiene solo token speciali.")
     
     pad_tensor = torch.ones(150 - len(tgt_pres[0])).to(device) * padding_value
     tgt_pres[0] = torch.cat((tgt_pres[0],pad_tensor.long()),dim = 0)
