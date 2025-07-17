@@ -10,9 +10,9 @@
 #SBATCH --gres=gpu:4
 #SBATCH --exclusive
 #SBATCH --cpus-per-task=8
-#SBATCH --job-name=pretrained_model
-#SBATCH --out=logs/pretrained.out
-#SBATCH --err=logs/pretrained.out
+#SBATCH --job-name=pretrained_model_100_epochs
+#SBATCH --out=logs/pretrained_100.out
+#SBATCH --err=logs/pretrained_100.out
 
 module load spack
 spack load cuda@12.2.91 2>/dev/null
