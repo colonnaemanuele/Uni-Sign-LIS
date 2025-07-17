@@ -39,6 +39,7 @@ dependencies = [
     "scipy==1.7.3",
     "seaborn==0.12.1",
     "sentencepiece==0.1.97",
+    "streamlit>=1.22.0",
     "tensorboard==2.9.1",
     "tensorflow==2.9.1",
     "timm==0.8.10.dev0",
