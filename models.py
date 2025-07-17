@@ -215,8 +215,7 @@ class Uni_Sign(nn.Module):
         if self.args.rgb_support:
             rgb_support_dict = {}
             for index_key, rgb_key in zip(['left_sampled_indices', 'right_sampled_indices'], ['left_hands', 'right_hands']):
-                rgb_feat = self.rgb_support_backbone(src_input[rgb_key])
-                
+                rgb_feat = self.rgb_support_backbone(src_input[rgb_key].to(next(self.rgb_support_backbone.parameters()).dtype))
                 rgb_support_dict[index_key] = src_input[index_key]
                 rgb_support_dict[rgb_key] = rgb_feat
         
@@ -225,10 +224,8 @@ class Uni_Sign(nn.Module):
 
         body_feat = None
         for part in self.modes:
-            input_tensor = src_input[part].to(torch.bfloat16)
-            # project position to hidden dim
+            input_tensor = src_input[part].to(next(self.rgb_support_backbone.parameters()).dtype)
             proj_feat = self.proj_linear[part](input_tensor).permute(0,3,1,2) #B,C,T,V
-            # spatial gcn forward
             gcn_feat = self.gcn_modules[part](proj_feat)
             if part == 'body':
                 body_feat = gcn_feat
