@@ -237,11 +237,6 @@ def evaluate(args, data_loader, model, model_without_ddp):
 
     tokenizer = model_without_ddp.mt5_tokenizer
     padding_value = tokenizer.eos_token_id
-
-    # DEBUG 3 - Token speciali
-    print("\n[DEBUG] Token speciali del tokenizer:")
-    print(f"[DEBUG] pad_token: {tokenizer.pad_token} ({tokenizer.pad_token_id})")
-    print(f"[DEBUG] eos_token: {tokenizer.eos_token} ({tokenizer.eos_token_id})")
     
     pad_tensor = torch.ones(150 - len(tgt_pres[0])).to(device) * padding_value
     tgt_pres[0] = torch.cat((tgt_pres[0],pad_tensor.long()),dim = 0)
