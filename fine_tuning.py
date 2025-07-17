@@ -1,12 +1,14 @@
 import torch
 from torch.nn.utils.rnn import pad_sequence
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, DistributedSampler
 from models import Uni_Sign
 import utils as utils
 from datasets import LIS_Dataset
 import os
 import time
-import argparse, json, datetime
+import argparse
+import json
+import datetime
 from pathlib import Path
 import math
 import sys
@@ -18,19 +20,18 @@ from config import *
 
 def main(args):
     utils.init_distributed_mode_ds(args)
-
-    print(args)
     utils.set_seed(args.seed)
 
-    print(f"Creating dataset:")
-        
+    print("Creating dataset:")
     train_data = LIS_Dataset(path=train_label_paths[args.dataset], 
                              args=args, phase='train')
     print(train_data)
 
-    
-    train_sampler = torch.utils.data.RandomSampler(train_data)
-
+    if args.distributed:
+        train_sampler = DistributedSampler(train_data)
+    else:
+        train_sampler = RandomSampler(train_data) 
+        
     train_dataloader = DataLoader(train_data,
                                  batch_size=args.batch_size, 
                                  num_workers=args.num_workers, 
@@ -43,10 +44,8 @@ def main(args):
 
     dev_data = LIS_Dataset(path=dev_label_paths[args.dataset], 
                            args=args, phase='dev')
-    print(dev_data)
 
-    dev_sampler = torch.utils.data.SequentialSampler(dev_data)
-
+    dev_sampler = SequentialSampler(dev_data)
     dev_dataloader = DataLoader(dev_data,
                                 batch_size=args.batch_size,
                                 num_workers=args.num_workers, 
@@ -59,7 +58,7 @@ def main(args):
                             args=args, phase='test')
     print(test_data)
 
-    test_sampler = torch.utils.data.SequentialSampler(test_data)
+    test_sampler = SequentialSampler(test_data)
 
     test_dataloader = DataLoader(test_data,
                                  batch_size=args.batch_size,
@@ -68,12 +67,7 @@ def main(args):
                                  sampler=test_sampler, 
                                  pin_memory=args.pin_mem)
 
-    print(f"Creating model:")
-    model = Uni_Sign(
-                args=args
-                )
-
-
+    model = Uni_Sign(args=args)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
@@ -93,10 +87,8 @@ def main(args):
         print('Unexpected keys: \n', '\n'.join(ret.unexpected_keys))
     
     try:
-        # se DeepSpeed è attivo
         model_without_ddp = model.module.module
     except AttributeError:
-        # se NON usi DeepSpeed
         model_without_ddp = model
 
     if args.distributed:
@@ -114,10 +106,8 @@ def main(args):
                 num_training_steps=int(args.epochs * len(train_dataloader)/args.gradient_accumulation_steps),
             )
     
-    """
     model, optimizer, lr_scheduler = utils.init_deepspeed(args, model, optimizer, lr_scheduler)
     model_without_ddp = model.module.module
-    """
 
     model_without_ddp = model
 
@@ -277,21 +267,19 @@ def evaluate(args, data_loader, model, model_without_ddp, phase):
     metric_logger = utils.MetricLogger(delimiter="  ")
     header = 'Test:'
 
-    """
     target_dtype = None
-    if model.bfloat16_enabled():
-        target_dtype = torch.bfloat16
-    """
+    if model_without_ddp.bfloat16_enabled():
+        target_dtype = torch.bfloat16 
 
     with torch.no_grad():
         tgt_pres = []
         tgt_refs = []
  
         for step, (src_input, tgt_input) in enumerate(metric_logger.log_every(data_loader, 10, header)):
-            #if target_dtype != None:
-            for key in src_input.keys():
-                if isinstance(src_input[key], torch.Tensor):
-                    src_input[key] = src_input[key].to(device)  # usa automaticamente CPU o CUDA
+            if target_dtype is not None:
+                for key in src_input.keys():
+                    if isinstance(src_input[key], torch.Tensor):
+                        src_input[key] = src_input[key].to(device)  # usa automaticamente CPU o CUDA
             
             if args.task == "CSLR":
                 tgt_input['gt_sentence'] = tgt_input['gt_gloss']
@@ -302,8 +290,7 @@ def evaluate(args, data_loader, model, model_without_ddp, phase):
         
             output = model_without_ddp.generate(stack_out, 
                                                 max_new_tokens=100, 
-                                                num_beams = 4,
-                        )
+                                                num_beams = 4)
 
             for i in range(len(output)):
                 tgt_pres.append(output[i])
